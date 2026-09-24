@@ -39,6 +39,9 @@ def get_connection(path: str):
 
 
 def process_files(paths: list[Path], repo: InvoiceRepository, log: ActionLog, model: str) -> None:
+    if not os.environ.get("ANTHROPIC_API_KEY"):
+        st.error("Clé d'API Claude manquante : renseigne ANTHROPIC_API_KEY dans le fichier .env, puis relance l'application.")
+        return
     try:
         agent = InvoiceAgent(client=anthropic.Anthropic(), repo=repo, model=model, company=COMPANY)
     except anthropic.AnthropicError as exc:
@@ -47,7 +50,13 @@ def process_files(paths: list[Path], repo: InvoiceRepository, log: ActionLog, mo
     pending = st.session_state.setdefault("pending", {})
     for path in paths:
         with st.status(f"Analyse de {path.name}…", expanded=True) as box:
-            result = agent.process(path)
+            try:
+                result = agent.process(path)
+            except Exception as exc:
+                box.update(label=f"{path.name} : échec de l'analyse", state="error", expanded=True)
+                st.error(f"Échec de l'analyse de {path.name} : {exc}")
+                log.record(path.name, "erreur", {"message": str(exc)})
+                continue
             for call in result.trace:
                 box.write(f"🔧 `{call.name}` → {call.output[:200]}")
             box.update(label=f"{path.name} : {STATUS_LABELS[result.verdict.status]}", state="complete", expanded=False)
@@ -161,7 +170,10 @@ def render_process_tab(repo: InvoiceRepository, log: ActionLog, model: str) -> N
         UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
         paths = []
         for upload in uploads:
-            path = UPLOAD_DIR / upload.name
+            safe_name = Path(upload.name).name
+            if not safe_name:
+                continue
+            path = UPLOAD_DIR / safe_name
             path.write_bytes(upload.getvalue())
             paths.append(path)
         process_files(paths, repo, log, model)
