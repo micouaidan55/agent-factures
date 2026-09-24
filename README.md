@@ -53,9 +53,9 @@ PDF / image ──► InvoiceAgent (boucle agentique) ──► verdict + extrac
 
 ### Choix de conception
 
-- **Boucle agentique manuelle plutôt qu'un framework** : environ 100 lignes lisibles, avec un contrôle total des garde-fous.
+- **Boucle agentique manuelle plutôt qu'un framework** : environ 140 lignes lisibles, avec un contrôle total des garde-fous.
 - **L'agent ne peut rien écrire** : il ne dispose que d'outils en lecture seule. L'enregistrement est une action humaine.
-- **Contrôles déterministes en code, jugement par le LLM** : les calculs (TVA, doublons, seuils) sont faits par du code testé. Claude décide quoi vérifier et explique le résultat. Un verdict « OK » est automatiquement requalifié si un contrôle a détecté un problème.
+- **Contrôles déterministes en code, jugement par le LLM** : les calculs (TVA, doublons, seuils) sont faits par du code testé. Claude décide quoi vérifier et explique le résultat. Un verdict « OK » est automatiquement requalifié si un contrôle a détecté un problème. Le code garantit aussi l'exécution des quatre contrôles (montants, échéance, doublons, historique fournisseur) même si le modèle en oublie un : ceux qui manquent sont relancés avant le verdict final.
 - **Garde-fous** : 10 itérations maximum par document, une seule nouvelle tentative en cas d'extraction invalide, coût en tokens affiché pour chaque document.
 - **Testé sans API** : la suite pytest utilise un client factice et ne consomme aucun crédit.
 
