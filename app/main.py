@@ -1,7 +1,7 @@
 """Interface Streamlit : dépôt, validation humaine, tableau de bord et journal."""
 
 import os
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from decimal import Decimal
 from pathlib import Path
 
@@ -17,6 +17,7 @@ from agent_factures.storage.action_log import ActionLog
 from agent_factures.storage.db import connect
 from agent_factures.storage.export import to_csv_bytes, to_excel_bytes, to_rows
 from agent_factures.storage.repository import InvoiceRepository
+from agent_factures.tools.formatting import euros
 from agent_factures.tools.reminder import draft_reminder
 
 load_dotenv()
@@ -24,12 +25,25 @@ load_dotenv()
 COMPANY = os.environ.get("COMPANY_NAME", DEFAULT_COMPANY)
 UPLOAD_DIR = Path("data/uploads")
 INBOX_DIR = Path("inbox")
+UPLOAD_TIMESTAMP_FORMAT = "%Y%m%d-%H%M%S-%f"
 ACCEPTED_TYPES = ["pdf", "png", "jpg", "jpeg"]
 STATUS_LABELS = {Status.OK: "✅ OK", Status.ANOMALY: "⚠️ Anomalie", Status.NEEDS_REVIEW: "❓ À revoir"}
 
 
-def euros(amount: Decimal) -> str:
-    return f"{amount:,.2f} €".replace(",", " ").replace(".", ",")
+def stored_upload_path(name: str, now: datetime) -> Path:
+    """Chemin de stockage d'un fichier déposé : horodaté pour ne jamais écraser un fichier
+    déjà accepté, et réduit à son nom de base pour rester dans UPLOAD_DIR (pas de traversée)."""
+    safe_name = Path(name).name or "fichier"
+    return UPLOAD_DIR / f"{now.strftime(UPLOAD_TIMESTAMP_FORMAT)}_{safe_name}"
+
+
+def archive_inbox_file(path: Path) -> Path:
+    """Déplace un fichier de l'inbox traité vers inbox/traites/ pour ne pas le retraiter."""
+    archive_dir = path.parent / "traites"
+    archive_dir.mkdir(parents=True, exist_ok=True)
+    destination = archive_dir / path.name
+    path.rename(destination)
+    return destination
 
 
 @st.cache_resource
@@ -38,15 +52,15 @@ def get_connection(path: str):
     return connect(path)
 
 
-def process_files(paths: list[Path], repo: InvoiceRepository, log: ActionLog, model: str) -> None:
+def process_files(paths: list[Path], repo: InvoiceRepository, log: ActionLog, model: str) -> bool:
     if not os.environ.get("ANTHROPIC_API_KEY"):
         st.error("Clé d'API Claude manquante : renseigne ANTHROPIC_API_KEY dans le fichier .env, puis relance l'application.")
-        return
+        return False
     try:
         agent = InvoiceAgent(client=anthropic.Anthropic(), repo=repo, model=model, company=COMPANY)
     except anthropic.AnthropicError as exc:
         st.error(f"Client Claude indisponible : {exc}. Vérifie ANTHROPIC_API_KEY dans le fichier .env.")
-        return
+        return False
     pending = st.session_state.setdefault("pending", {})
     for path in paths:
         with st.status(f"Analyse de {path.name}…", expanded=True) as box:
@@ -65,12 +79,14 @@ def process_files(paths: list[Path], repo: InvoiceRepository, log: ActionLog, mo
             "analyse",
             {
                 "statut": result.verdict.status.value,
+                "explication": result.verdict.explanation,
                 "outils": [c.name for c in result.trace],
                 "tokens": result.input_tokens + result.output_tokens,
                 "cout_usd": result.cost_usd,
             },
         )
         pending[path.name] = (path, result)
+    return True
 
 
 def _default(result: AgentResult, field: str):
@@ -103,6 +119,9 @@ def render_review(name: str, path: Path, result: AgentResult, repo: InvoiceRepos
             st.warning(f"**{issue.code}** : {issue.message}")
         cost = f"{result.cost_usd:.4f} $" if result.cost_usd is not None else "inconnu"
         st.caption(f"{result.input_tokens} tokens en entrée · {result.output_tokens} en sortie · coût ≈ {cost}")
+        with st.expander("Détail des étapes de l'agent"):
+            for call in result.trace:
+                st.write(f"🔧 `{call.name}` → {call.output[:200]}")
         if result.invoice is None:
             st.info("Pas d'extraction valide : complète les champs à la main ou rejette le document.")
 
@@ -170,17 +189,16 @@ def render_process_tab(repo: InvoiceRepository, log: ActionLog, model: str) -> N
         UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
         paths = []
         for upload in uploads:
-            safe_name = Path(upload.name).name
-            if not safe_name:
-                continue
-            path = UPLOAD_DIR / safe_name
+            path = stored_upload_path(upload.name, datetime.now())
             path.write_bytes(upload.getvalue())
             paths.append(path)
         process_files(paths, repo, log, model)
     if col2.button("Traiter le dossier inbox/"):
         paths = sorted(p for p in INBOX_DIR.glob("*") if p.is_file() and not p.name.startswith("."))
         if paths:
-            process_files(paths, repo, log, model)
+            if process_files(paths, repo, log, model):
+                for path in paths:
+                    archive_inbox_file(path)
         else:
             st.info("Le dossier inbox/ est vide.")
 
@@ -259,4 +277,5 @@ def main() -> None:
         render_log_tab(log)
 
 
-main()
+if __name__ == "__main__":
+    main()
