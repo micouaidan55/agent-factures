@@ -17,9 +17,20 @@ Dans une PME, saisir et vérifier les factures prend plusieurs heures par semain
 
 ## Résultats mesurés
 
-Évaluation sur 20 documents fictifs (mises en page variées, un scan, des doublons, des erreurs de TVA volontaires, des devis et un courrier hors sujet) :
+Évaluation de Claude Sonnet 5 sur **40 documents fictifs** : factures reçues et émises, devis, 3 scans dont un dégradé (penché, flou, taché), une facture de 2 pages, plusieurs taux de TVA, factures en anglais avec autoliquidation, mises en page variées, et des pièges volontaires (3 doublons dont un au numéro formaté autrement, 3 erreurs de TVA, des lignes mal additionnées, 2 montants inhabituels, 5 échéances dépassées). S'y ajoutent un avoir, un bon de livraison et un courrier, que l'agent doit écarter.
 
-Voir `evals/results/`. Pour reproduire : `uv run python -m evals.run --model claude-sonnet-5`.
+| Métrique | Résultat |
+|---|---|
+| Précision des champs extraits (10 champs × 37 pièces) | 100 % |
+| Anomalies détectées (rappel) | 100 % (14/14) |
+| Fausses alertes (précision) | 100 % (aucune) |
+| Verdicts corrects | 100 % (40/40) |
+| Coût moyen par document | 0,033 $ |
+| Temps moyen par document | 11,4 s |
+
+Les documents sont générés par code : ils sont propres et lisibles, contrairement à une partie des vraies factures. Ces scores montrent que le pipeline est correct de bout en bout. Ils ne garantissent pas le même niveau sur des documents réels très abîmés, qui sont la prochaine étape d'évaluation.
+
+Détail par document : `evals/results/claude-sonnet-5.json`. Pour reproduire (environ 1,30 $) : `uv run python -m evals.run --model claude-sonnet-5 --max-cost 2`.
 
 ## Démarrage rapide
 

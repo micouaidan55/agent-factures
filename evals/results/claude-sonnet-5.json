@@ -1,0 +1,1578 @@
+[
+  {
+    "file": "01_bureau_plus.pdf",
+    "expected_status": "ok",
+    "status": "ok",
+    "explication": "Cette facture du fournisseur Bureau Plus SARL est cohérente : les montants (HT, TVA, TTC) sont exacts, l'échéance n'est pas dépassée et aucun doublon n'a été détecté. Aucune anomalie à signaler.",
+    "expected_issues": [],
+    "issues": [],
+    "invoice": {
+      "doc_type": "facture",
+      "direction": "recue",
+      "supplier": "Bureau Plus SARL",
+      "customer": "Atelier Lumière SAS",
+      "number": "F-2026-101",
+      "issue_date": "2026-09-02",
+      "due_date": "2026-10-02",
+      "amount_excl_tax": "186.5",
+      "vat_amount": "37.3",
+      "amount_incl_tax": "223.8",
+      "currency": "EUR",
+      "lines": [
+        {
+          "description": "Ramettes papier A4",
+          "quantity": "20",
+          "unit_price": "4.5",
+          "total": "90.0"
+        },
+        {
+          "description": "Stylos bille (boîte)",
+          "quantity": "5",
+          "unit_price": "12.9",
+          "total": "64.5"
+        },
+        {
+          "description": "Classeurs",
+          "quantity": "10",
+          "unit_price": "3.2",
+          "total": "32.0"
+        }
+      ]
+    },
+    "cout_usd": 0.033872,
+    "secondes": 10.423595958156511
+  },
+  {
+    "file": "02_dupont.pdf",
+    "expected_status": "ok",
+    "status": "ok",
+    "explication": "La facture de l'Imprimerie Dupont est cohérente : les montants HT, TVA et TTC concordent, l'échéance n'est pas dépassée et aucun doublon n'a été détecté. C'est la première facture de ce fournisseur, aucune anomalie particulière.",
+    "expected_issues": [],
+    "issues": [],
+    "invoice": {
+      "doc_type": "facture",
+      "direction": "recue",
+      "supplier": "Imprimerie Dupont",
+      "customer": "Atelier Lumière SAS",
+      "number": "4512",
+      "issue_date": "2026-09-03",
+      "due_date": "2026-10-03",
+      "amount_excl_tax": "223.0",
+      "vat_amount": "44.6",
+      "amount_incl_tax": "267.6",
+      "currency": "EUR",
+      "lines": [
+        {
+          "description": "Flyers A5 x1000",
+          "quantity": "2",
+          "unit_price": "89.0",
+          "total": "178.0"
+        },
+        {
+          "description": "Cartes de visite x500",
+          "quantity": "1",
+          "unit_price": "45.0",
+          "total": "45.0"
+        }
+      ]
+    },
+    "cout_usd": 0.032414,
+    "secondes": 11.145122417015955
+  },
+  {
+    "file": "03_technet.pdf",
+    "expected_status": "ok",
+    "status": "ok",
+    "explication": "La facture TechNet Services n° TN-889 est cohérente : les montants HT, TVA et TTC concordent, aucune facture en double n'a été détectée, et l'échéance (04/10/2026) n'est pas dépassée. Aucune anomalie détectée.",
+    "expected_issues": [],
+    "issues": [],
+    "invoice": {
+      "doc_type": "facture",
+      "direction": "recue",
+      "supplier": "TechNet Services",
+      "customer": "Atelier Lumière SAS",
+      "number": "TN-889",
+      "issue_date": "2026-09-04",
+      "due_date": "2026-10-04",
+      "amount_excl_tax": "350.0",
+      "vat_amount": "70.0",
+      "amount_incl_tax": "420.0",
+      "currency": "EUR",
+      "lines": [
+        {
+          "description": "Maintenance informatique septembre",
+          "quantity": "1",
+          "unit_price": "350.0",
+          "total": "350.0"
+        }
+      ]
+    },
+    "cout_usd": 0.03161,
+    "secondes": 9.07332795788534
+  },
+  {
+    "file": "04_bureau_plus.pdf",
+    "expected_status": "ok",
+    "status": "ok",
+    "explication": "La facture de Bureau Plus SARL est cohérente : les montants HT, TVA et TTC correspondent, l'échéance n'est pas dépassée, aucun doublon détecté et le montant est conforme à l'historique de ce fournisseur.",
+    "expected_issues": [],
+    "issues": [],
+    "invoice": {
+      "doc_type": "facture",
+      "direction": "recue",
+      "supplier": "Bureau Plus SARL",
+      "customer": "Atelier Lumière SAS",
+      "number": "F-2026-118",
+      "issue_date": "2026-09-08",
+      "due_date": "2026-10-08",
+      "amount_excl_tax": "185.0",
+      "vat_amount": "37.0",
+      "amount_incl_tax": "222.0",
+      "currency": "EUR",
+      "lines": [
+        {
+          "description": "Cartouches d'encre",
+          "quantity": "4",
+          "unit_price": "38.0",
+          "total": "152.0"
+        },
+        {
+          "description": "Post-it (lot)",
+          "quantity": "6",
+          "unit_price": "5.5",
+          "total": "33.0"
+        }
+      ]
+    },
+    "cout_usd": 0.03235,
+    "secondes": 9.107414832804352
+  },
+  {
+    "file": "05_martin.pdf",
+    "expected_status": "anomalie",
+    "status": "anomalie",
+    "explication": "Les montants de la facture sont cohérents et il n'y a pas de doublon détecté. Cependant, l'échéance de paiement (10/09/2026) est dépassée de 14 jours : il convient de régler cette facture rapidement.",
+    "expected_issues": [
+      "ECHEANCE_DEPASSEE"
+    ],
+    "issues": [
+      "ECHEANCE_DEPASSEE"
+    ],
+    "invoice": {
+      "doc_type": "facture",
+      "direction": "recue",
+      "supplier": "Transports Martin",
+      "customer": "Atelier Lumière SAS",
+      "number": "TM/26/033",
+      "issue_date": "2026-08-11",
+      "due_date": "2026-09-10",
+      "amount_excl_tax": "350.0",
+      "vat_amount": "70.0",
+      "amount_incl_tax": "420.0",
+      "currency": "EUR",
+      "lines": [
+        {
+          "description": "Livraison Lyon - Grenoble",
+          "quantity": "1",
+          "unit_price": "280.0",
+          "total": "280.0"
+        },
+        {
+          "description": "Manutention",
+          "quantity": "2",
+          "unit_price": "35.0",
+          "total": "70.0"
+        }
+      ]
+    },
+    "cout_usd": 0.032914,
+    "secondes": 10.987921416992322
+  },
+  {
+    "file": "06_bureau_plus.pdf",
+    "expected_status": "ok",
+    "status": "ok",
+    "explication": "Cette facture de Bureau Plus SARL (298,56 € TTC) est cohérente : les calculs sont exacts, l'échéance n'est pas dépassée, et le montant est proche des factures précédentes de ce fournisseur. Aucune anomalie détectée.",
+    "expected_issues": [],
+    "issues": [],
+    "invoice": {
+      "doc_type": "facture",
+      "direction": "recue",
+      "supplier": "Bureau Plus SARL",
+      "customer": "Atelier Lumière SAS",
+      "number": "F-2026-131",
+      "issue_date": "2026-09-12",
+      "due_date": "2026-10-12",
+      "amount_excl_tax": "248.8",
+      "vat_amount": "49.76",
+      "amount_incl_tax": "298.56",
+      "currency": "EUR",
+      "lines": [
+        {
+          "description": "Chaises de bureau",
+          "quantity": "1",
+          "unit_price": "189.0",
+          "total": "189.0"
+        },
+        {
+          "description": "Lampe LED",
+          "quantity": "2",
+          "unit_price": "29.9",
+          "total": "59.8"
+        }
+      ]
+    },
+    "cout_usd": 0.03346,
+    "secondes": 10.674536040984094
+  },
+  {
+    "file": "07_dupont_scan.png",
+    "expected_status": "ok",
+    "status": "ok",
+    "explication": "La facture de l'Imprimerie Dupont (n°4580, 192,00 € TTC) est cohérente : les montants sont exacts, aucun doublon détecté, et l'échéance du 14/10/2026 n'est pas dépassée.",
+    "expected_issues": [],
+    "issues": [],
+    "invoice": {
+      "doc_type": "facture",
+      "direction": "recue",
+      "supplier": "Imprimerie Dupont",
+      "customer": "Atelier Lumière SAS",
+      "number": "4580",
+      "issue_date": "2026-09-14",
+      "due_date": "2026-10-14",
+      "amount_excl_tax": "160.0",
+      "vat_amount": "32.0",
+      "amount_incl_tax": "192.0",
+      "currency": "EUR",
+      "lines": [
+        {
+          "description": "Affiches A2 x50",
+          "quantity": "1",
+          "unit_price": "160.0",
+          "total": "160.0"
+        }
+      ]
+    },
+    "cout_usd": 0.037878,
+    "secondes": 11.825149707961828
+  },
+  {
+    "file": "08_technet_tva.pdf",
+    "expected_status": "anomalie",
+    "status": "anomalie",
+    "explication": "Le total de la facture ne correspond pas : HT (240,00 €) + TVA (60,00 €) devrait donner 300,00 € TTC, alors que la facture indique 288,00 €. Il faut contacter le fournisseur TechNet Services pour clarifier ce montant avant paiement.",
+    "expected_issues": [
+      "TOTAL_INCOHERENT"
+    ],
+    "issues": [
+      "TOTAL_INCOHERENT"
+    ],
+    "invoice": {
+      "doc_type": "facture",
+      "direction": "recue",
+      "supplier": "TechNet Services",
+      "customer": "Atelier Lumière SAS",
+      "number": "TN-902",
+      "issue_date": "2026-09-15",
+      "due_date": "2026-10-15",
+      "amount_excl_tax": "240.0",
+      "vat_amount": "60.0",
+      "amount_incl_tax": "288.0",
+      "currency": "EUR",
+      "lines": [
+        {
+          "description": "Licence antivirus (12 mois)",
+          "quantity": "10",
+          "unit_price": "24.0",
+          "total": "240.0"
+        }
+      ]
+    },
+    "cout_usd": 0.032386,
+    "secondes": 10.331310415873304
+  },
+  {
+    "file": "09_bureau_plus_doublon.pdf",
+    "expected_status": "anomalie",
+    "status": "anomalie",
+    "explication": "Les montants de la facture sont cohérents et l'échéance n'est pas dépassée, mais cette facture (Bureau Plus SARL, n° F-2026-101) a été détectée comme un doublon d'un document déjà enregistré. Merci de vérifier avant tout paiement pour éviter un règlement en double.",
+    "expected_issues": [
+      "DOUBLON"
+    ],
+    "issues": [
+      "DOUBLON"
+    ],
+    "invoice": {
+      "doc_type": "facture",
+      "direction": "recue",
+      "supplier": "Bureau Plus SARL",
+      "customer": "Atelier Lumière SAS",
+      "number": "F-2026-101",
+      "issue_date": "2026-09-02",
+      "due_date": "2026-10-02",
+      "amount_excl_tax": "186.5",
+      "vat_amount": "37.3",
+      "amount_incl_tax": "223.8",
+      "currency": "EUR",
+      "lines": [
+        {
+          "description": "Ramettes papier A4",
+          "quantity": "20",
+          "unit_price": "4.5",
+          "total": "90.0"
+        },
+        {
+          "description": "Stylos bille (boîte)",
+          "quantity": "5",
+          "unit_price": "12.9",
+          "total": "64.5"
+        },
+        {
+          "description": "Classeurs",
+          "quantity": "10",
+          "unit_price": "3.2",
+          "total": "32.0"
+        }
+      ]
+    },
+    "cout_usd": 0.033914,
+    "secondes": 10.525647041853517
+  },
+  {
+    "file": "10_dupont_devis.pdf",
+    "expected_status": "ok",
+    "status": "ok",
+    "explication": "Ce devis de l'Imprimerie Dupont pour des brochures (740€ HT, 888€ TTC) est cohérent : les montants sont exacts et aucun doublon n'a été détecté. Aucune anomalie à signaler.",
+    "expected_issues": [],
+    "issues": [],
+    "invoice": {
+      "doc_type": "devis",
+      "direction": "recue",
+      "supplier": "Imprimerie Dupont",
+      "customer": "Atelier Lumière SAS",
+      "number": "D-2026-044",
+      "issue_date": "2026-09-16",
+      "due_date": null,
+      "amount_excl_tax": "740.0",
+      "vat_amount": "148.0",
+      "amount_incl_tax": "888.0",
+      "currency": "EUR",
+      "lines": [
+        {
+          "description": "Brochures 16 pages x500",
+          "quantity": "1",
+          "unit_price": "740.0",
+          "total": "740.0"
+        }
+      ]
+    },
+    "cout_usd": 0.032796,
+    "secondes": 10.995835500070825
+  },
+  {
+    "file": "11_martin.pdf",
+    "expected_status": "ok",
+    "status": "ok",
+    "explication": "La facture de Transports Martin est cohérente : les montants (HT, TVA, TTC) correspondent, l'échéance n'est pas dépassée et aucun doublon n'a été détecté.",
+    "expected_issues": [],
+    "issues": [],
+    "invoice": {
+      "doc_type": "facture",
+      "direction": "recue",
+      "supplier": "Transports Martin",
+      "customer": "Atelier Lumière SAS",
+      "number": "TM/26/041",
+      "issue_date": "2026-09-01",
+      "due_date": "2026-10-01",
+      "amount_excl_tax": "240.0",
+      "vat_amount": "48.0",
+      "amount_incl_tax": "288.0",
+      "currency": "EUR",
+      "lines": [
+        {
+          "description": "Livraison Lyon - Annecy",
+          "quantity": "1",
+          "unit_price": "240.0",
+          "total": "240.0"
+        }
+      ]
+    },
+    "cout_usd": 0.031506,
+    "secondes": 9.112163790967315
+  },
+  {
+    "file": "12_bureau_plus_inhabituel.pdf",
+    "expected_status": "anomalie",
+    "status": "anomalie",
+    "explication": "Les montants de la facture sont cohérents et l'échéance n'est pas dépassée, mais son montant de 4 752 € TTC est anormalement élevé par rapport aux factures précédentes de ce fournisseur (moyenne de 248 €). Il est recommandé de vérifier cette facture avant paiement.",
+    "expected_issues": [
+      "MONTANT_INHABITUEL"
+    ],
+    "issues": [
+      "MONTANT_INHABITUEL"
+    ],
+    "invoice": {
+      "doc_type": "facture",
+      "direction": "recue",
+      "supplier": "Bureau Plus SARL",
+      "customer": "Atelier Lumière SAS",
+      "number": "F-2026-150",
+      "issue_date": "2026-09-18",
+      "due_date": "2026-10-18",
+      "amount_excl_tax": "3960.0",
+      "vat_amount": "792.0",
+      "amount_incl_tax": "4752.0",
+      "currency": "EUR",
+      "lines": [
+        {
+          "description": "Bureaux assis-debout",
+          "quantity": "8",
+          "unit_price": "495.0",
+          "total": "3960.0"
+        }
+      ]
+    },
+    "cout_usd": 0.032184,
+    "secondes": 11.065430916845798
+  },
+  {
+    "file": "13_emise_bellevue.pdf",
+    "expected_status": "anomalie",
+    "status": "anomalie",
+    "explication": "La facture est correcte sur le plan des montants, mais son échéance du 04/09/2026 est dépassée de 20 jours : il s'agit d'un impayé client à relancer rapidement.",
+    "expected_issues": [
+      "ECHEANCE_DEPASSEE"
+    ],
+    "issues": [
+      "ECHEANCE_DEPASSEE"
+    ],
+    "invoice": {
+      "doc_type": "facture",
+      "direction": "emise",
+      "supplier": "Atelier Lumière SAS",
+      "customer": "Hôtel Bellevue",
+      "number": "AL-2026-057",
+      "issue_date": "2026-08-05",
+      "due_date": "2026-09-04",
+      "amount_excl_tax": "1440.0",
+      "vat_amount": "288.0",
+      "amount_incl_tax": "1728.0",
+      "currency": "EUR",
+      "lines": [
+        {
+          "description": "Luminaires sur mesure",
+          "quantity": "3",
+          "unit_price": "420.0",
+          "total": "1260.0"
+        },
+        {
+          "description": "Pose",
+          "quantity": "1",
+          "unit_price": "180.0",
+          "total": "180.0"
+        }
+      ]
+    },
+    "cout_usd": 0.032226,
+    "secondes": 10.25828120787628
+  },
+  {
+    "file": "14_courrier.pdf",
+    "expected_status": "a_revoir",
+    "status": "a_revoir",
+    "explication": "Ce document n'est ni une facture ni un devis : il s'agit d'un courrier de Transports Martin informant d'un changement d'adresse de siège social. Il ne nécessite pas de traitement comptable, mais une mise à jour des coordonnées de ce fournisseur.",
+    "expected_issues": [],
+    "issues": [],
+    "invoice": null,
+    "cout_usd": 0.009096,
+    "secondes": 3.4669834170490503
+  },
+  {
+    "file": "15_dupont_tva.pdf",
+    "expected_status": "anomalie",
+    "status": "anomalie",
+    "explication": "La facture présente une incohérence de calcul : le total HT (230,00 €) plus la TVA indiquée (27,60 €) ne donnent pas le total TTC annoncé (276,00 €). En réalité, une TVA à 20 % sur 230,00 € devrait être de 46,00 €. Il faut demander une facture corrigée au fournisseur avant paiement.",
+    "expected_issues": [
+      "TOTAL_INCOHERENT"
+    ],
+    "issues": [
+      "TOTAL_INCOHERENT"
+    ],
+    "invoice": {
+      "doc_type": "facture",
+      "direction": "recue",
+      "supplier": "Imprimerie Dupont",
+      "customer": "Atelier Lumière SAS",
+      "number": "4633",
+      "issue_date": "2026-09-20",
+      "due_date": "2026-10-20",
+      "amount_excl_tax": "230.0",
+      "vat_amount": "27.6",
+      "amount_incl_tax": "276.0",
+      "currency": "EUR",
+      "lines": [
+        {
+          "description": "Kakémono 80x200",
+          "quantity": "2",
+          "unit_price": "115.0",
+          "total": "230.0"
+        }
+      ]
+    },
+    "cout_usd": 0.034256,
+    "secondes": 12.0720098328311
+  },
+  {
+    "file": "16_martin_doublon.pdf",
+    "expected_status": "anomalie",
+    "status": "anomalie",
+    "explication": "Cette facture de Transports Martin (n° TM/26/033) semble être un doublon d'une facture déjà enregistrée (fichier 05_martin.pdf). De plus, son échéance du 10/09/2026 est dépassée de 14 jours et reste donc à régler rapidement.",
+    "expected_issues": [
+      "DOUBLON",
+      "ECHEANCE_DEPASSEE"
+    ],
+    "issues": [
+      "DOUBLON",
+      "ECHEANCE_DEPASSEE"
+    ],
+    "invoice": {
+      "doc_type": "facture",
+      "direction": "recue",
+      "supplier": "Transports Martin",
+      "customer": "Atelier Lumière SAS",
+      "number": "TM/26/033",
+      "issue_date": "2026-08-11",
+      "due_date": "2026-09-10",
+      "amount_excl_tax": "350.0",
+      "vat_amount": "70.0",
+      "amount_incl_tax": "420.0",
+      "currency": "EUR",
+      "lines": [
+        {
+          "description": "Livraison Lyon - Grenoble",
+          "quantity": "1",
+          "unit_price": "280.0",
+          "total": "280.0"
+        },
+        {
+          "description": "Manutention",
+          "quantity": "2",
+          "unit_price": "35.0",
+          "total": "70.0"
+        }
+      ]
+    },
+    "cout_usd": 0.032566,
+    "secondes": 11.124660125002265
+  },
+  {
+    "file": "17_technet_devis.pdf",
+    "expected_status": "ok",
+    "status": "ok",
+    "explication": "Le devis de TechNet Services (DV-310) est cohérent : les montants HT, TVA et TTC correspondent, aucun doublon n'a été détecté. Le montant est nettement supérieur aux échanges précédents avec ce fournisseur, mais rien n'indique une erreur.",
+    "expected_issues": [],
+    "issues": [],
+    "invoice": {
+      "doc_type": "devis",
+      "direction": "recue",
+      "supplier": "TechNet Services",
+      "customer": "Atelier Lumière SAS",
+      "number": "DV-310",
+      "issue_date": "2026-09-21",
+      "due_date": null,
+      "amount_excl_tax": "2850.0",
+      "vat_amount": "570.0",
+      "amount_incl_tax": "3420.0",
+      "currency": "EUR",
+      "lines": [
+        {
+          "description": "Remplacement serveur",
+          "quantity": "1",
+          "unit_price": "2400.0",
+          "total": "2400.0"
+        },
+        {
+          "description": "Installation",
+          "quantity": "1",
+          "unit_price": "450.0",
+          "total": "450.0"
+        }
+      ]
+    },
+    "cout_usd": 0.03295,
+    "secondes": 12.030423916876316
+  },
+  {
+    "file": "18_bureau_plus.pdf",
+    "expected_status": "ok",
+    "status": "ok",
+    "explication": "La facture de Bureau Plus SARL est cohérente : les montants HT, TVA et TTC correspondent, l'échéance n'est pas dépassée et aucun doublon n'a été détecté. Le montant est toutefois nettement inférieur à la moyenne habituelle de ce fournisseur, mais cela ne constitue pas une anomalie en soi.",
+    "expected_issues": [],
+    "issues": [],
+    "invoice": {
+      "doc_type": "facture",
+      "direction": "recue",
+      "supplier": "Bureau Plus SARL",
+      "customer": "Atelier Lumière SAS",
+      "number": "F-2026-162",
+      "issue_date": "2026-09-22",
+      "due_date": "2026-10-22",
+      "amount_excl_tax": "38.0",
+      "vat_amount": "7.6",
+      "amount_incl_tax": "45.6",
+      "currency": "EUR",
+      "lines": [
+        {
+          "description": "Enveloppes (x500)",
+          "quantity": "2",
+          "unit_price": "19.0",
+          "total": "38.0"
+        }
+      ]
+    },
+    "cout_usd": 0.032382,
+    "secondes": 9.65219591697678
+  },
+  {
+    "file": "19_emise_cafe.pdf",
+    "expected_status": "ok",
+    "status": "ok",
+    "explication": "La facture émise vers Café des Arts est cohérente : les montants HT, TVA et TTC correspondent, l'échéance n'est pas dépassée et aucun doublon n'a été détecté.",
+    "expected_issues": [],
+    "issues": [],
+    "invoice": {
+      "doc_type": "facture",
+      "direction": "emise",
+      "supplier": "Atelier Lumière SAS",
+      "customer": "Café des Arts",
+      "number": "AL-2026-071",
+      "issue_date": "2026-09-22",
+      "due_date": "2026-10-22",
+      "amount_excl_tax": "580.0",
+      "vat_amount": "116.0",
+      "amount_incl_tax": "696.0",
+      "currency": "EUR",
+      "lines": [
+        {
+          "description": "Suspensions design",
+          "quantity": "4",
+          "unit_price": "145.0",
+          "total": "580.0"
+        }
+      ]
+    },
+    "cout_usd": 0.03133,
+    "secondes": 9.297335250070319
+  },
+  {
+    "file": "20_dupont.pdf",
+    "expected_status": "ok",
+    "status": "ok",
+    "explication": "La facture d'Imprimerie Dupont est cohérente : les montants HT, TVA et TTC concordent, l'échéance n'est pas dépassée, aucun doublon n'a été détecté et le montant est conforme à l'historique du fournisseur.",
+    "expected_issues": [],
+    "issues": [],
+    "invoice": {
+      "doc_type": "facture",
+      "direction": "recue",
+      "supplier": "Imprimerie Dupont",
+      "customer": "Atelier Lumière SAS",
+      "number": "4701",
+      "issue_date": "2026-09-23",
+      "due_date": "2026-10-23",
+      "amount_excl_tax": "132.0",
+      "vat_amount": "26.4",
+      "amount_incl_tax": "158.4",
+      "currency": "EUR",
+      "lines": [
+        {
+          "description": "Étiquettes adhésives x2000",
+          "quantity": "1",
+          "unit_price": "132.0",
+          "total": "132.0"
+        }
+      ]
+    },
+    "cout_usd": 0.03174,
+    "secondes": 9.955093707889318
+  },
+  {
+    "file": "21_epicerie_multi_tva.pdf",
+    "expected_status": "ok",
+    "status": "ok",
+    "explication": "La facture de l'Épicerie Fine du Rhône est cohérente : les montants HT, TVA et TTC correspondent, aucun doublon n'a été détecté et l'échéance (05/10/2026) n'est pas encore dépassée. C'est le premier document reçu de ce fournisseur, sans historique permettant de comparer.",
+    "expected_issues": [],
+    "issues": [],
+    "invoice": {
+      "doc_type": "facture",
+      "direction": "recue",
+      "supplier": "Épicerie Fine du Rhône",
+      "customer": "Atelier Lumière SAS",
+      "number": "EFR-2026-0412",
+      "issue_date": "2026-09-05",
+      "due_date": "2026-10-05",
+      "amount_excl_tax": "454.9",
+      "vat_amount": "49.16",
+      "amount_incl_tax": "504.06",
+      "currency": "EUR",
+      "lines": [
+        {
+          "description": "Plateaux repas (TVA 10 %)",
+          "quantity": "25",
+          "unit_price": "14.5",
+          "total": "362.5"
+        },
+        {
+          "description": "Jus de fruits (bouteille 1 L) (TVA 5,5 %)",
+          "quantity": "12",
+          "unit_price": "3.2",
+          "total": "38.4"
+        },
+        {
+          "description": "Vaisselle jetable (lot) (TVA 20 %)",
+          "quantity": "3",
+          "unit_price": "18.0",
+          "total": "54.0"
+        }
+      ]
+    },
+    "cout_usd": 0.036036,
+    "secondes": 11.77729908307083
+  },
+  {
+    "file": "22_electricite_sans_echeance.pdf",
+    "expected_status": "ok",
+    "status": "ok",
+    "explication": "La facture d'Électricité Lyon Pro est cohérente : les montants HT, TVA et TTC correspondent, aucune échéance dépassée, et aucun doublon ni anomalie détecté. C'est la première facture de ce fournisseur, rien à signaler.",
+    "expected_issues": [],
+    "issues": [],
+    "invoice": {
+      "doc_type": "facture",
+      "direction": "recue",
+      "supplier": "Électricité Lyon Pro",
+      "customer": "Atelier Lumière SAS",
+      "number": "EL-5487",
+      "issue_date": "2026-09-09",
+      "due_date": null,
+      "amount_excl_tax": "700.0",
+      "vat_amount": "140.0",
+      "amount_incl_tax": "840.0",
+      "currency": "EUR",
+      "lines": [
+        {
+          "description": "Installation de spots LED",
+          "quantity": "12",
+          "unit_price": "45.0",
+          "total": "540.0"
+        },
+        {
+          "description": "Fourniture câblage",
+          "quantity": "1",
+          "unit_price": "160.0",
+          "total": "160.0"
+        }
+      ]
+    },
+    "cout_usd": 0.032926,
+    "secondes": 10.934582459041849
+  },
+  {
+    "file": "23_technet_multipage.pdf",
+    "expected_status": "ok",
+    "status": "ok",
+    "explication": "La facture TechNet Services n°TN-941 est cohérente : les montants HT, TVA et TTC concordent avec le détail des lignes, l'échéance (10/10/2026) n'est pas dépassée et aucun doublon n'a été détecté. Aucune anomalie à signaler.",
+    "expected_issues": [],
+    "issues": [],
+    "invoice": {
+      "doc_type": "facture",
+      "direction": "recue",
+      "supplier": "TechNet Services",
+      "customer": "Atelier Lumière SAS",
+      "number": "TN-941",
+      "issue_date": "2026-09-10",
+      "due_date": "2026-10-10",
+      "amount_excl_tax": "2125.8",
+      "vat_amount": "425.16",
+      "amount_incl_tax": "2550.96",
+      "currency": "EUR",
+      "lines": [
+        {
+          "description": "Câble RJ45 Cat6 — lot 1",
+          "quantity": "1",
+          "unit_price": "4.9",
+          "total": "4.9"
+        },
+        {
+          "description": "Câble RJ45 Cat6 — lot 2",
+          "quantity": "2",
+          "unit_price": "4.9",
+          "total": "9.8"
+        },
+        {
+          "description": "Câble RJ45 Cat6 — lot 3",
+          "quantity": "3",
+          "unit_price": "4.9",
+          "total": "14.7"
+        },
+        {
+          "description": "Adaptateur USB-C — lot 1",
+          "quantity": "1",
+          "unit_price": "12.0",
+          "total": "12.0"
+        },
+        {
+          "description": "Adaptateur USB-C — lot 2",
+          "quantity": "2",
+          "unit_price": "12.0",
+          "total": "24.0"
+        },
+        {
+          "description": "Adaptateur USB-C — lot 3",
+          "quantity": "3",
+          "unit_price": "12.0",
+          "total": "36.0"
+        },
+        {
+          "description": "Clavier sans fil — lot 1",
+          "quantity": "1",
+          "unit_price": "29.0",
+          "total": "29.0"
+        },
+        {
+          "description": "Clavier sans fil — lot 2",
+          "quantity": "2",
+          "unit_price": "29.0",
+          "total": "58.0"
+        },
+        {
+          "description": "Clavier sans fil — lot 3",
+          "quantity": "3",
+          "unit_price": "29.0",
+          "total": "87.0"
+        },
+        {
+          "description": "Souris optique — lot 1",
+          "quantity": "1",
+          "unit_price": "14.5",
+          "total": "14.5"
+        },
+        {
+          "description": "Souris optique — lot 2",
+          "quantity": "2",
+          "unit_price": "14.5",
+          "total": "29.0"
+        },
+        {
+          "description": "Souris optique — lot 3",
+          "quantity": "3",
+          "unit_price": "14.5",
+          "total": "43.5"
+        },
+        {
+          "description": "Hub USB 4 ports — lot 1",
+          "quantity": "1",
+          "unit_price": "19.9",
+          "total": "19.9"
+        },
+        {
+          "description": "Hub USB 4 ports — lot 2",
+          "quantity": "2",
+          "unit_price": "19.9",
+          "total": "39.8"
+        },
+        {
+          "description": "Hub USB 4 ports — lot 3",
+          "quantity": "3",
+          "unit_price": "19.9",
+          "total": "59.7"
+        },
+        {
+          "description": "Barrette RAM 16 Go — lot 1",
+          "quantity": "1",
+          "unit_price": "42.0",
+          "total": "42.0"
+        },
+        {
+          "description": "Barrette RAM 16 Go — lot 2",
+          "quantity": "2",
+          "unit_price": "42.0",
+          "total": "84.0"
+        },
+        {
+          "description": "Barrette RAM 16 Go — lot 3",
+          "quantity": "3",
+          "unit_price": "42.0",
+          "total": "126.0"
+        },
+        {
+          "description": "SSD 1 To — lot 1",
+          "quantity": "1",
+          "unit_price": "79.0",
+          "total": "79.0"
+        },
+        {
+          "description": "SSD 1 To — lot 2",
+          "quantity": "2",
+          "unit_price": "79.0",
+          "total": "158.0"
+        },
+        {
+          "description": "SSD 1 To — lot 3",
+          "quantity": "3",
+          "unit_price": "79.0",
+          "total": "237.0"
+        },
+        {
+          "description": "Support d'écran — lot 1",
+          "quantity": "1",
+          "unit_price": "34.0",
+          "total": "34.0"
+        },
+        {
+          "description": "Support d'écran — lot 2",
+          "quantity": "2",
+          "unit_price": "34.0",
+          "total": "68.0"
+        },
+        {
+          "description": "Support d'écran — lot 3",
+          "quantity": "3",
+          "unit_price": "34.0",
+          "total": "102.0"
+        },
+        {
+          "description": "Casque audio — lot 1",
+          "quantity": "1",
+          "unit_price": "49.0",
+          "total": "49.0"
+        },
+        {
+          "description": "Casque audio — lot 2",
+          "quantity": "2",
+          "unit_price": "49.0",
+          "total": "98.0"
+        },
+        {
+          "description": "Casque audio — lot 3",
+          "quantity": "3",
+          "unit_price": "49.0",
+          "total": "147.0"
+        },
+        {
+          "description": "Webcam HD — lot 1",
+          "quantity": "1",
+          "unit_price": "39.0",
+          "total": "39.0"
+        },
+        {
+          "description": "Webcam HD — lot 2",
+          "quantity": "2",
+          "unit_price": "39.0",
+          "total": "78.0"
+        },
+        {
+          "description": "Webcam HD — lot 3",
+          "quantity": "3",
+          "unit_price": "39.0",
+          "total": "117.0"
+        },
+        {
+          "description": "Multiprise parafoudre — lot 1",
+          "quantity": "1",
+          "unit_price": "24.5",
+          "total": "24.5"
+        },
+        {
+          "description": "Multiprise parafoudre — lot 2",
+          "quantity": "2",
+          "unit_price": "24.5",
+          "total": "49.0"
+        },
+        {
+          "description": "Multiprise parafoudre — lot 3",
+          "quantity": "3",
+          "unit_price": "24.5",
+          "total": "73.5"
+        },
+        {
+          "description": "Tapis de souris — lot 1",
+          "quantity": "1",
+          "unit_price": "6.5",
+          "total": "6.5"
+        },
+        {
+          "description": "Tapis de souris — lot 2",
+          "quantity": "2",
+          "unit_price": "6.5",
+          "total": "13.0"
+        },
+        {
+          "description": "Tapis de souris — lot 3",
+          "quantity": "3",
+          "unit_price": "6.5",
+          "total": "19.5"
+        }
+      ]
+    },
+    "cout_usd": 0.074162,
+    "secondes": 24.60353291593492
+  },
+  {
+    "file": "24_bureau_plus_doublon_format.pdf",
+    "expected_status": "anomalie",
+    "status": "anomalie",
+    "explication": "Les montants de cette facture sont cohérents et l'échéance n'est pas dépassée, mais elle correspond à un document déjà enregistré (doublon détecté avec le fichier 04_bureau_plus.pdf). Merci de vérifier qu'il ne s'agit pas d'un double paiement avant règlement.",
+    "expected_issues": [
+      "DOUBLON"
+    ],
+    "issues": [
+      "DOUBLON"
+    ],
+    "invoice": {
+      "doc_type": "facture",
+      "direction": "recue",
+      "supplier": "Bureau Plus SARL",
+      "customer": "Atelier Lumière SAS",
+      "number": "F2026-118",
+      "issue_date": "2026-09-08",
+      "due_date": "2026-10-08",
+      "amount_excl_tax": "185.0",
+      "vat_amount": "37.0",
+      "amount_incl_tax": "222.0",
+      "currency": "EUR",
+      "lines": [
+        {
+          "description": "Cartouches d'encre",
+          "quantity": "4",
+          "unit_price": "38.0",
+          "total": "152.0"
+        },
+        {
+          "description": "Post-it (lot)",
+          "quantity": "6",
+          "unit_price": "5.5",
+          "total": "33.0"
+        }
+      ]
+    },
+    "cout_usd": 0.034338,
+    "secondes": 16.606229834025726
+  },
+  {
+    "file": "25_nordic_lamps_en.pdf",
+    "expected_status": "ok",
+    "status": "ok",
+    "explication": "Facture du fournisseur irlandais Nordic Lamps Ltd, montant de 1024 € sans TVA (autoliquidation intracommunautaire, conforme à la réglementation). Aucun doublon ni anomalie détectée, échéance au 10 octobre 2026 non dépassée.",
+    "expected_issues": [],
+    "issues": [],
+    "invoice": {
+      "doc_type": "facture",
+      "direction": "recue",
+      "supplier": "Nordic Lamps Ltd",
+      "customer": "Atelier Lumière SAS",
+      "number": "INV-20931",
+      "issue_date": "2026-09-10",
+      "due_date": "2026-10-10",
+      "amount_excl_tax": "1024.0",
+      "vat_amount": "0.0",
+      "amount_incl_tax": "1024.0",
+      "currency": "EUR",
+      "lines": [
+        {
+          "description": "Pendant lamp NORD-40",
+          "quantity": "6",
+          "unit_price": "89.0",
+          "total": "534.0"
+        },
+        {
+          "description": "Floor lamp FJORD",
+          "quantity": "2",
+          "unit_price": "245.0",
+          "total": "490.0"
+        }
+      ]
+    },
+    "cout_usd": 0.033572,
+    "secondes": 10.549243416870013
+  },
+  {
+    "file": "26_martin_scan_degrade.png",
+    "expected_status": "ok",
+    "status": "ok",
+    "explication": "La facture de Transports Martin est cohérente : les montants HT, TVA et TTC correspondent, l'échéance n'est pas dépassée, aucun doublon n'a été trouvé et le montant est conforme aux factures habituelles de ce fournisseur.",
+    "expected_issues": [],
+    "issues": [],
+    "invoice": {
+      "doc_type": "facture",
+      "direction": "recue",
+      "supplier": "Transports Martin",
+      "customer": "Atelier Lumière SAS",
+      "number": "TM/26/052",
+      "issue_date": "2026-09-12",
+      "due_date": "2026-10-12",
+      "amount_excl_tax": "300.0",
+      "vat_amount": "60.0",
+      "amount_incl_tax": "360.0",
+      "currency": "EUR",
+      "lines": [
+        {
+          "description": "Livraison Lyon - Chambéry",
+          "quantity": "1",
+          "unit_price": "260.0",
+          "total": "260.0"
+        },
+        {
+          "description": "Hayon élévateur",
+          "quantity": "1",
+          "unit_price": "40.0",
+          "total": "40.0"
+        }
+      ]
+    },
+    "cout_usd": 0.038976,
+    "secondes": 14.847753958078101
+  },
+  {
+    "file": "27_emise_gourmet.pdf",
+    "expected_status": "ok",
+    "status": "ok",
+    "explication": "La facture émise vers le Restaurant Le Gourmet est cohérente : les montants HT, TVA et TTC concordent, l'échéance n'est pas dépassée et aucun doublon n'a été détecté.",
+    "expected_issues": [],
+    "issues": [],
+    "invoice": {
+      "doc_type": "facture",
+      "direction": "emise",
+      "supplier": "Atelier Lumière SAS",
+      "customer": "Restaurant Le Gourmet",
+      "number": "AL-2026-078",
+      "issue_date": "2026-09-15",
+      "due_date": "2026-10-15",
+      "amount_excl_tax": "970.0",
+      "vat_amount": "194.0",
+      "amount_incl_tax": "1164.0",
+      "currency": "EUR",
+      "lines": [
+        {
+          "description": "Appliques murales laiton",
+          "quantity": "6",
+          "unit_price": "125.0",
+          "total": "750.0"
+        },
+        {
+          "description": "Pose",
+          "quantity": "1",
+          "unit_price": "220.0",
+          "total": "220.0"
+        }
+      ]
+    },
+    "cout_usd": 0.033536,
+    "secondes": 10.766852790955454
+  },
+  {
+    "file": "28_emise_galerie_retard.pdf",
+    "expected_status": "anomalie",
+    "status": "anomalie",
+    "explication": "Les montants de la facture sont cohérents et il n'y a pas de doublon. En revanche, l'échéance du 19 août 2026 est dépassée de 36 jours : le client Galerie Nova n'a pas encore payé et une relance est à prévoir.",
+    "expected_issues": [
+      "ECHEANCE_DEPASSEE"
+    ],
+    "issues": [
+      "ECHEANCE_DEPASSEE"
+    ],
+    "invoice": {
+      "doc_type": "facture",
+      "direction": "emise",
+      "supplier": "Atelier Lumière SAS",
+      "customer": "Galerie Nova",
+      "number": "AL-2026-049",
+      "issue_date": "2026-07-20",
+      "due_date": "2026-08-19",
+      "amount_excl_tax": "1850.0",
+      "vat_amount": "370.0",
+      "amount_incl_tax": "2220.0",
+      "currency": "EUR",
+      "lines": [
+        {
+          "description": "Éclairage sur rail (installation)",
+          "quantity": "1",
+          "unit_price": "1850.0",
+          "total": "1850.0"
+        }
+      ]
+    },
+    "cout_usd": 0.032304,
+    "secondes": 9.747590583050624
+  },
+  {
+    "file": "29_dupont.pdf",
+    "expected_status": "ok",
+    "status": "ok",
+    "explication": "Cette facture d'Imprimerie Dupont (n°4755, 64,80 € TTC) est cohérente : les montants s'additionnent correctement, l'échéance n'est pas dépassée, et aucun doublon ni anomalie n'a été détecté.",
+    "expected_issues": [],
+    "issues": [],
+    "invoice": {
+      "doc_type": "facture",
+      "direction": "recue",
+      "supplier": "Imprimerie Dupont",
+      "customer": "Atelier Lumière SAS",
+      "number": "4755",
+      "issue_date": "2026-09-16",
+      "due_date": "2026-10-16",
+      "amount_excl_tax": "54.0",
+      "vat_amount": "10.8",
+      "amount_incl_tax": "64.8",
+      "currency": "EUR",
+      "lines": [
+        {
+          "description": "Tampons encreurs",
+          "quantity": "3",
+          "unit_price": "18.0",
+          "total": "54.0"
+        }
+      ]
+    },
+    "cout_usd": 0.032824,
+    "secondes": 10.962308290880173
+  },
+  {
+    "file": "30_dupont_inhabituel.pdf",
+    "expected_status": "anomalie",
+    "status": "anomalie",
+    "explication": "Les montants de la facture sont cohérents et l'échéance n'est pas dépassée, mais le montant de 2 400 € TTC est plus de 3 fois supérieur à la moyenne habituelle des factures de ce fournisseur (170,70 €). Il est recommandé de vérifier cette facture avant paiement.",
+    "expected_issues": [
+      "MONTANT_INHABITUEL"
+    ],
+    "issues": [
+      "MONTANT_INHABITUEL"
+    ],
+    "invoice": {
+      "doc_type": "facture",
+      "direction": "recue",
+      "supplier": "Imprimerie Dupont",
+      "customer": "Atelier Lumière SAS",
+      "number": "4790",
+      "issue_date": "2026-09-17",
+      "due_date": "2026-10-17",
+      "amount_excl_tax": "2000.0",
+      "vat_amount": "400.0",
+      "amount_incl_tax": "2400.0",
+      "currency": "EUR",
+      "lines": [
+        {
+          "description": "Signalétique complète showroom",
+          "quantity": "1",
+          "unit_price": "2000.0",
+          "total": "2000.0"
+        }
+      ]
+    },
+    "cout_usd": 0.032158,
+    "secondes": 10.70259308302775
+  },
+  {
+    "file": "31_epicerie_lignes.pdf",
+    "expected_status": "anomalie",
+    "status": "anomalie",
+    "explication": "La somme des lignes de détail (290 € + 84 € = 374 €) ne correspond pas au total HT indiqué sur la facture (389 €), soit un écart de 15 €. Il faut demander une facture corrigée au fournisseur avant paiement.",
+    "expected_issues": [
+      "LIGNES_INCOHERENTES"
+    ],
+    "issues": [
+      "LIGNES_INCOHERENTES"
+    ],
+    "invoice": {
+      "doc_type": "facture",
+      "direction": "recue",
+      "supplier": "Épicerie Fine du Rhône",
+      "customer": "Atelier Lumière SAS",
+      "number": "EFR-2026-0431",
+      "issue_date": "2026-09-18",
+      "due_date": "2026-10-18",
+      "amount_excl_tax": "389.0",
+      "vat_amount": "38.9",
+      "amount_incl_tax": "427.9",
+      "currency": "EUR",
+      "lines": [
+        {
+          "description": "Plateaux repas",
+          "quantity": "20",
+          "unit_price": "14.5",
+          "total": "290.0"
+        },
+        {
+          "description": "Desserts",
+          "quantity": "20",
+          "unit_price": "4.2",
+          "total": "84.0"
+        }
+      ]
+    },
+    "cout_usd": 0.035966,
+    "secondes": 14.309810833074152
+  },
+  {
+    "file": "32_bureau_plus_avoir.pdf",
+    "expected_status": "a_revoir",
+    "status": "a_revoir",
+    "explication": "Ce document est un avoir (AV-2026-007) émis par Bureau Plus SARL, correspondant à un remboursement partiel de la facture F-2026-131. Ce n'est ni une facture ni un devis, il nécessite donc un traitement comptable spécifique et une vérification manuelle.",
+    "expected_issues": [],
+    "issues": [],
+    "invoice": null,
+    "cout_usd": 0.009806,
+    "secondes": 4.385883665876463
+  },
+  {
+    "file": "33_martin_bon_livraison.pdf",
+    "expected_status": "a_revoir",
+    "status": "a_revoir",
+    "explication": "Ce document est un bon de livraison (BL-8841 de Transports Martin), et non une facture ou un devis. Il ne peut donc pas être traité comptablement en l'état ; il faut réclamer la facture correspondante si elle n'a pas encore été reçue.",
+    "expected_issues": [],
+    "issues": [],
+    "invoice": null,
+    "cout_usd": 0.009218,
+    "secondes": 3.6155644999817014
+  },
+  {
+    "file": "34_electricite_devis.pdf",
+    "expected_status": "ok",
+    "status": "ok",
+    "explication": "Ce devis d'Électricité Lyon Pro pour 4 452,00 € TTC est cohérent : les montants HT, TVA et TTC correspondent, et aucun doublon ni anomalie particulière n'a été détecté. Aucune action corrective n'est nécessaire.",
+    "expected_issues": [],
+    "issues": [],
+    "invoice": {
+      "doc_type": "devis",
+      "direction": "recue",
+      "supplier": "Électricité Lyon Pro",
+      "customer": "Atelier Lumière SAS",
+      "number": "DEV-2026-12",
+      "issue_date": "2026-09-19",
+      "due_date": null,
+      "amount_excl_tax": "3710.0",
+      "vat_amount": "742.0",
+      "amount_incl_tax": "4452.0",
+      "currency": "EUR",
+      "lines": [
+        {
+          "description": "Mise aux normes du showroom",
+          "quantity": "1",
+          "unit_price": "3200.0",
+          "total": "3200.0"
+        },
+        {
+          "description": "Éclairage de secours",
+          "quantity": "6",
+          "unit_price": "85.0",
+          "total": "510.0"
+        }
+      ]
+    },
+    "cout_usd": 0.034988,
+    "secondes": 13.077907333848998
+  },
+  {
+    "file": "35_technet_retard.pdf",
+    "expected_status": "anomalie",
+    "status": "anomalie",
+    "explication": "La facture est correcte sur le plan des montants, mais son échéance (9 septembre 2026) est dépassée de 15 jours : un paiement est en retard et doit être régularisé rapidement.",
+    "expected_issues": [
+      "ECHEANCE_DEPASSEE"
+    ],
+    "issues": [
+      "ECHEANCE_DEPASSEE"
+    ],
+    "invoice": {
+      "doc_type": "facture",
+      "direction": "recue",
+      "supplier": "TechNet Services",
+      "customer": "Atelier Lumière SAS",
+      "number": "TN-950",
+      "issue_date": "2026-08-10",
+      "due_date": "2026-09-09",
+      "amount_excl_tax": "350.0",
+      "vat_amount": "70.0",
+      "amount_incl_tax": "420.0",
+      "currency": "EUR",
+      "lines": [
+        {
+          "description": "Maintenance informatique août",
+          "quantity": "1",
+          "unit_price": "350.0",
+          "total": "350.0"
+        }
+      ]
+    },
+    "cout_usd": 0.031448,
+    "secondes": 11.447459375020117
+  },
+  {
+    "file": "36_emise_bellevue.pdf",
+    "expected_status": "ok",
+    "status": "ok",
+    "explication": "La facture est cohérente : les montants HT, TVA et TTC correspondent, l'échéance n'est pas dépassée et aucun doublon n'a été détecté. Aucun problème identifié.",
+    "expected_issues": [],
+    "issues": [],
+    "invoice": {
+      "doc_type": "facture",
+      "direction": "emise",
+      "supplier": "Atelier Lumière SAS",
+      "customer": "Hôtel Bellevue",
+      "number": "AL-2026-083",
+      "issue_date": "2026-09-19",
+      "due_date": "2026-10-19",
+      "amount_excl_tax": "1300.0",
+      "vat_amount": "260.0",
+      "amount_incl_tax": "1560.0",
+      "currency": "EUR",
+      "lines": [
+        {
+          "description": "Lampes de chevet",
+          "quantity": "20",
+          "unit_price": "65.0",
+          "total": "1300.0"
+        }
+      ]
+    },
+    "cout_usd": 0.031706,
+    "secondes": 11.66124179190956
+  },
+  {
+    "file": "37_nordic_lamps_en.pdf",
+    "expected_status": "ok",
+    "status": "ok",
+    "explication": "Cette facture du fournisseur Nordic Lamps Ltd (390 €, autoliquidation de TVA intracommunautaire) est cohérente : les montants correspondent, il n'y a pas de doublon et l'échéance du 21/10/2026 n'est pas dépassée. Aucune anomalie détectée.",
+    "expected_issues": [],
+    "issues": [],
+    "invoice": {
+      "doc_type": "facture",
+      "direction": "recue",
+      "supplier": "Nordic Lamps Ltd",
+      "customer": "Atelier Lumière SAS",
+      "number": "INV-20977",
+      "issue_date": "2026-09-21",
+      "due_date": "2026-10-21",
+      "amount_excl_tax": "390.0",
+      "vat_amount": "0.0",
+      "amount_incl_tax": "390.0",
+      "currency": "EUR",
+      "lines": [
+        {
+          "description": "Wall light LUMA",
+          "quantity": "10",
+          "unit_price": "39.0",
+          "total": "390.0"
+        }
+      ]
+    },
+    "cout_usd": 0.033288,
+    "secondes": 13.467217624885961
+  },
+  {
+    "file": "38_dupont_scan.png",
+    "expected_status": "ok",
+    "status": "ok",
+    "explication": "Cette facture de l'Imprimerie Dupont (n°4801, 114 € TTC) est cohérente : les calculs sont exacts, l'échéance du 21/10/2026 n'est pas dépassée, et aucun doublon n'a été détecté. Aucune anomalie à signaler.",
+    "expected_issues": [],
+    "issues": [],
+    "invoice": {
+      "doc_type": "facture",
+      "direction": "recue",
+      "supplier": "Imprimerie Dupont",
+      "customer": "Atelier Lumière SAS",
+      "number": "4801",
+      "issue_date": "2026-09-21",
+      "due_date": "2026-10-21",
+      "amount_excl_tax": "95.0",
+      "vat_amount": "19.0",
+      "amount_incl_tax": "114.0",
+      "currency": "EUR",
+      "lines": [
+        {
+          "description": "Cartes de vœux x200",
+          "quantity": "1",
+          "unit_price": "95.0",
+          "total": "95.0"
+        }
+      ]
+    },
+    "cout_usd": 0.039576,
+    "secondes": 26.618545667035505
+  },
+  {
+    "file": "39_bureau_plus.pdf",
+    "expected_status": "ok",
+    "status": "ok",
+    "explication": "La facture de Bureau Plus SARL est cohérente : les montants HT, TVA et TTC correspondent, aucun doublon n'a été détecté et l'échéance n'est pas dépassée. Aucune anomalie à signaler.",
+    "expected_issues": [],
+    "issues": [],
+    "invoice": {
+      "doc_type": "facture",
+      "direction": "recue",
+      "supplier": "Bureau Plus SARL",
+      "customer": "Atelier Lumière SAS",
+      "number": "F-2026-175",
+      "issue_date": "2026-09-22",
+      "due_date": "2026-10-22",
+      "amount_excl_tax": "120.5",
+      "vat_amount": "24.1",
+      "amount_incl_tax": "144.6",
+      "currency": "EUR",
+      "lines": [
+        {
+          "description": "Agrafeuses",
+          "quantity": "5",
+          "unit_price": "12.5",
+          "total": "62.5"
+        },
+        {
+          "description": "Boîtes d'archives",
+          "quantity": "20",
+          "unit_price": "2.9",
+          "total": "58.0"
+        }
+      ]
+    },
+    "cout_usd": 0.03338,
+    "secondes": 10.69894462521188
+  },
+  {
+    "file": "40_electricite_tva.pdf",
+    "expected_status": "anomalie",
+    "status": "anomalie",
+    "explication": "Il y a une erreur de calcul sur cette facture : le Total HT (1 000,00 €) plus la TVA (220,00 €) devrait donner 1 220,00 € et non 1 200,00 € comme indiqué. Il est recommandé de contacter le fournisseur Électricité Lyon Pro pour faire corriger cette facture avant paiement.",
+    "expected_issues": [
+      "TOTAL_INCOHERENT"
+    ],
+    "issues": [
+      "TOTAL_INCOHERENT"
+    ],
+    "invoice": {
+      "doc_type": "facture",
+      "direction": "recue",
+      "supplier": "Électricité Lyon Pro",
+      "customer": "Atelier Lumière SAS",
+      "number": "EL-5520",
+      "issue_date": "2026-09-23",
+      "due_date": "2026-10-23",
+      "amount_excl_tax": "1000.0",
+      "vat_amount": "220.0",
+      "amount_incl_tax": "1200.0",
+      "currency": "EUR",
+      "lines": [
+        {
+          "description": "Remplacement tableau électrique",
+          "quantity": "1",
+          "unit_price": "780.0",
+          "total": "780.0"
+        },
+        {
+          "description": "Main d'œuvre (heure)",
+          "quantity": "4",
+          "unit_price": "55.0",
+          "total": "220.0"
+        }
+      ]
+    },
+    "cout_usd": 0.034208,
+    "secondes": 11.16062983404845
+  }
+]
