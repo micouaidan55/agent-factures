@@ -109,3 +109,20 @@ def test_every_call_is_traced():
     executor.execute("check_amounts", {})
     executor.execute("submit_extraction", VALID)
     assert [(c.name, c.is_error) for c in executor.trace] == [("check_amounts", True), ("submit_extraction", False)]
+
+
+def test_handler_crash_becomes_tool_error():
+    executor = make_executor()
+    executor.execute("submit_extraction", VALID)
+
+    # Simulate a corrupt repository by replacing list_by_supplier
+    def corrupt_list(*args, **kwargs):
+        raise RuntimeError("base corrompue")
+
+    executor.repo.list_by_supplier = corrupt_list
+    output, is_error = executor.execute("get_supplier_history", {})
+
+    assert is_error is True
+    assert "base corrompue" in output
+    assert executor.trace[-1].name == "get_supplier_history"
+    assert executor.trace[-1].is_error is True

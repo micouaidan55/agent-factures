@@ -50,7 +50,13 @@ class ToolExecutor:
 
     def execute(self, name: str, tool_input: dict) -> ToolOutput:
         handler = self._handlers.get(name)
-        output, is_error = handler(tool_input) if handler else (f"Outil inconnu : {name}.", True)
+        if handler:
+            try:
+                output, is_error = handler(tool_input)
+            except Exception as exc:
+                output, is_error = f"Erreur interne de l'outil {name} : {exc}", True
+        else:
+            output, is_error = f"Outil inconnu : {name}.", True
         self.trace.append(ToolCall(name=name, input=tool_input, output=output, is_error=is_error))
         return output, is_error
 
