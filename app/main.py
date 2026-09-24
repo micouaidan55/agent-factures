@@ -16,9 +16,10 @@ from agent_factures.extraction.models import Direction, DocumentType, Invoice, S
 from agent_factures.storage.action_log import ActionLog
 from agent_factures.storage.db import connect
 from agent_factures.storage.export import to_csv_bytes, to_excel_bytes, to_rows
-from agent_factures.storage.repository import InvoiceRepository
+from agent_factures.storage.ledger import Ledger, build_ledger
+from agent_factures.storage.repository import InvoiceRepository, StoredInvoice
 from agent_factures.tools.formatting import euros
-from agent_factures.tools.reminder import draft_reminder
+from agent_factures.tools.reminder import AMOUNT_ERROR_CODES, draft_correction_request, draft_reminder
 
 load_dotenv()
 
@@ -52,6 +53,16 @@ def archive_processed_inbox(paths: list[Path], pending: dict) -> None:
         archived = archive_inbox_file(path)
         if path.name in pending:
             pending[path.name] = (archived, pending[path.name][1])
+
+
+def rejection_follow_up(result: AgentResult) -> tuple[str | None, str | None]:
+    """Suite à donner au rejet d'une pièce : (brouillon de demande de rectification, message d'information)."""
+    invoice = result.invoice
+    if invoice is None or not any(issue.code in AMOUNT_ERROR_CODES for issue in result.issues):
+        return None, None
+    if invoice.direction is Direction.ISSUED:
+        return None, "Facture émise avec une erreur de montant : corrige-la, puis pense à la réémettre à ton client."
+    return draft_correction_request(invoice, result.issues), None
 
 
 @st.cache_resource
@@ -185,7 +196,10 @@ def render_review(name: str, path: Path, result: AgentResult, repo: InvoiceRepos
             del st.session_state["pending"][name]
             st.rerun()
         if reject:
-            log.record(name, "rejete")
+            draft, note = rejection_follow_up(result)
+            log.record(name, "rejete", {"brouillon_rectification": draft} if draft else None)
+            if draft or note:
+                st.session_state.setdefault("follow_ups", {})[name] = (draft, note)
             del st.session_state["pending"][name]
             st.rerun()
 
@@ -212,15 +226,29 @@ def render_process_tab(repo: InvoiceRepository, log: ActionLog, model: str) -> N
     for name, (path, result) in list(st.session_state.get("pending", {}).items()):
         render_review(name, path, result, repo, log)
 
+    follow_ups = st.session_state.get("follow_ups", {})
+    for name, (draft, note) in list(follow_ups.items()):
+        with st.container(border=True):
+            st.subheader(f"{name} — rejetée")
+            if draft:
+                st.caption("Brouillon de demande de facture rectificative (rien n'est envoyé automatiquement) :")
+                st.code(draft, language=None)
+            if note:
+                st.info(note)
+            if st.button("Fermer", key=f"close-{name}"):
+                del follow_ups[name]
+                st.rerun()
+
 
 def render_dashboard(repo: InvoiceRepository, today: date) -> None:
     stored = repo.list_all()
-    invoices = [s for s in stored if s.invoice.doc_type is DocumentType.INVOICE]
-    to_pay = sum((s.invoice.amount_incl_tax for s in invoices if s.invoice.direction is Direction.RECEIVED), Decimal("0"))
-    to_collect = sum((s.invoice.amount_incl_tax for s in invoices if s.invoice.direction is Direction.ISSUED), Decimal("0"))
-    upcoming = [s for s in invoices if s.invoice.due_date and today <= s.invoice.due_date <= today + timedelta(days=30)]
-    late_suppliers = repo.list_overdue(today, direction=Direction.RECEIVED)
-    late_customers = repo.list_overdue(today, direction=Direction.ISSUED)
+    ledger = build_ledger(repo, today)
+    unpaid = ledger.to_pay + ledger.overdue + ledger.unpaid_customers
+    to_pay = sum((s.invoice.amount_incl_tax for s in ledger.to_pay + ledger.overdue), Decimal("0"))
+    to_collect = sum((s.invoice.amount_incl_tax for s in ledger.unpaid_customers), Decimal("0"))
+    upcoming = [s for s in unpaid if s.invoice.due_date and today <= s.invoice.due_date <= today + timedelta(days=30)]
+    late_suppliers = ledger.overdue
+    late_customers = [s for s in ledger.unpaid_customers if Ledger.days_late(s, today) > 0]
 
     col1, col2, col3, col4 = st.columns(4)
     col1.metric("À payer (fournisseurs, TTC)", euros(to_pay))
@@ -258,7 +286,41 @@ def render_dashboard(repo: InvoiceRepository, today: date) -> None:
     )
 
 
-def render_log_tab(log: ActionLog) -> None:
+def _render_unpaid(stored: StoredInvoice, repo: InvoiceRepository, log: ActionLog, today: date,
+                   counterpart: str, with_reminder: bool = False) -> None:
+    invoice = stored.invoice
+    days_late = Ledger.days_late(stored, today)
+    due = f"échéance {invoice.due_date:%d/%m/%Y}" if invoice.due_date else "sans échéance"
+    late = f" — ⚠️ {days_late} jours de retard" if days_late else ""
+    col_text, col_button = st.columns([4, 1])
+    col_text.write(f"**{counterpart}** — n° {invoice.number} — {euros(invoice.amount_incl_tax)} — {due}{late}")
+    if col_button.button("✓ Payée", help="Marquer comme payée", key=f"paid-{stored.id}"):
+        repo.mark_paid(stored.id, today)
+        log.record(Path(stored.source_file).name, "payee", {"id": stored.id, "numero": invoice.number})
+        st.rerun()
+    if with_reminder and days_late:
+        with st.expander("Brouillon de relance"):
+            st.code(draft_reminder(invoice, today), language=None)
+
+
+def render_log_tab(repo: InvoiceRepository, log: ActionLog, today: date) -> None:
+    ledger = build_ledger(repo, today)
+    sections = [
+        ("À payer", "Factures fournisseurs non payées, pas encore échues.", ledger.to_pay, False),
+        ("Échéance dépassée", "Factures fournisseurs non payées dont l'échéance est passée.", ledger.overdue, False),
+        ("Clients impayés", "Factures émises que le client ne nous a pas encore payées.", ledger.unpaid_customers, True),
+    ]
+    for title, caption, invoices, issued in sections:
+        total = sum((s.invoice.amount_incl_tax for s in invoices), Decimal("0"))
+        st.subheader(f"{title} ({len(invoices)} — {euros(total)})")
+        st.caption(caption)
+        if not invoices:
+            st.write("Aucune facture.")
+        for stored in invoices:
+            counterpart = (stored.invoice.customer or "Client") if issued else stored.invoice.supplier
+            _render_unpaid(stored, repo, log, today, counterpart, with_reminder=issued)
+
+    st.subheader("Historique des actions")
     entries = log.list_recent(limit=200)
     if not entries:
         st.info("Le journal est vide.")
@@ -281,7 +343,7 @@ def main() -> None:
     with tab_dashboard:
         render_dashboard(repo, date.today())
     with tab_log:
-        render_log_tab(log)
+        render_log_tab(repo, log, date.today())
 
 
 if __name__ == "__main__":

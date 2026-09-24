@@ -13,7 +13,8 @@ Dans une PME, saisir et vérifier les factures prend plusieurs heures par semain
 3. **Vérifie** la cohérence des montants, les doublons, les montants inhabituels pour un fournisseur et les échéances dépassées.
 4. **Explique** son verdict en langage clair : ✅ OK, ⚠️ anomalie ou ❓ à revoir.
 5. **Attend votre validation** avant d'enregistrer quoi que ce soit.
-6. **Prépare un brouillon de relance** pour les clients en retard de paiement, et signale les factures fournisseurs à régler. Rien n'est jamais envoyé automatiquement.
+6. **Prépare les mails** : une relance pour chaque client en retard de paiement, et une demande de facture rectificative quand tu rejettes une facture fournisseur à cause d'une erreur de montant. Rien n'est jamais envoyé automatiquement.
+7. **Suit les paiements** : le journal classe les factures non payées en trois listes (à payer, échéance dépassée, clients impayés), avec un bouton pour marquer chacune comme payée.
 
 ## Résultats mesurés
 
@@ -79,6 +80,5 @@ uv run pytest
 ## Limites connues et feuille de route
 
 - Pas encore de connexion à une boîte mail (Gmail ou IMAP).
-- Pas de suivi des paiements : les totaux « à payer » et « à encaisser » portent sur toutes les factures enregistrées.
 - Mono-utilisateur, sans authentification.
 - Prochaines étapes : tri automatique des emails entrants, relances clients, option de modèle local pour les données sensibles.

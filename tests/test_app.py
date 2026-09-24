@@ -93,3 +93,65 @@ def test_archiving_inbox_updates_pending_paths(tmp_path):
     archived = inbox / "traites" / "facture.pdf"
     assert archived.exists()
     assert pending["facture.pdf"] == (archived, result)
+
+
+def _result_with(invoice, issues):
+    from agent_factures.agent.loop import AgentResult
+    from agent_factures.extraction.models import Status, Verdict
+
+    return AgentResult(
+        invoice=invoice, partial_extraction=None,
+        verdict=Verdict(status=Status.ANOMALY, explanation="Montants incohérents."),
+        issues=issues, trace=[], input_tokens=0, output_tokens=0, cost_usd=None,
+    )
+
+
+def test_rejecting_a_received_invoice_with_amount_error_drafts_a_correction_request():
+    from agent_factures.extraction.models import Issue
+
+    issue = Issue(code="TOTAL_INCOHERENT", message="HT + TVA = 125,00 € mais le TTC indiqué est 120,00 €.")
+    draft, note = app_main.rejection_follow_up(_result_with(make_invoice(number="TN-902"), [issue]))
+    assert note is None
+    assert "TN-902" in draft and "facture rectificative" in draft
+
+
+def test_rejecting_an_issued_invoice_with_amount_error_only_shows_a_note():
+    from agent_factures.extraction.models import Issue
+
+    issue = Issue(code="LIGNES_INCOHERENTES", message="Somme des lignes fausse.")
+    draft, note = app_main.rejection_follow_up(_result_with(make_invoice(direction="emise"), [issue]))
+    assert draft is None
+    assert "réémettre" in note
+
+
+def test_rejecting_without_amount_error_needs_no_follow_up():
+    from agent_factures.extraction.models import Issue
+
+    duplicate = Issue(code="DOUBLON", message="Déjà enregistrée.")
+    assert app_main.rejection_follow_up(_result_with(make_invoice(), [duplicate])) == (None, None)
+    assert app_main.rejection_follow_up(_result_with(None, [])) == (None, None)
+
+
+def test_journal_lists_unpaid_invoices_and_marks_them_paid(tmp_path, monkeypatch):
+    from datetime import date, timedelta
+
+    db_path = tmp_path / "journal.db"
+    repo = InvoiceRepository(connect(str(db_path)))
+    today = date.today()
+    repo.add(make_invoice(number="A-PAYER", due_date=today + timedelta(days=10)), "a.pdf")
+    late_id = repo.add(make_invoice(number="EN-RETARD", due_date=today - timedelta(days=5)), "b.pdf")
+    repo.add(make_invoice(number="CLIENT-1", direction="emise", due_date=today - timedelta(days=3)), "c.pdf")
+    monkeypatch.setenv("AGENT_FACTURES_DB", str(db_path))
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "")
+
+    at = AppTest.from_file(APP_PATH, default_timeout=30).run()
+    assert not at.exception
+    subheaders = [h.value for h in at.subheader]
+    for title in ("À payer", "Échéance dépassée", "Clients impayés"):
+        assert any(title in h for h in subheaders), title
+
+    pay_button = next(b for b in at.button if b.key == f"paid-{late_id}")
+    pay_button.click().run()
+
+    assert not at.exception
+    assert InvoiceRepository(connect(str(db_path))).get(late_id).paid_at == today
