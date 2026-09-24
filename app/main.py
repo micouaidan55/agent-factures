@@ -46,6 +46,14 @@ def archive_inbox_file(path: Path) -> Path:
     return destination
 
 
+def archive_processed_inbox(paths: list[Path], pending: dict) -> None:
+    """Archive les fichiers traités et fait pointer les revues en attente vers leur nouvel emplacement."""
+    for path in paths:
+        archived = archive_inbox_file(path)
+        if path.name in pending:
+            pending[path.name] = (archived, pending[path.name][1])
+
+
 @st.cache_resource
 def get_connection(path: str):
     Path(path).parent.mkdir(parents=True, exist_ok=True)
@@ -197,8 +205,7 @@ def render_process_tab(repo: InvoiceRepository, log: ActionLog, model: str) -> N
         paths = sorted(p for p in INBOX_DIR.glob("*") if p.is_file() and not p.name.startswith("."))
         if paths:
             if process_files(paths, repo, log, model):
-                for path in paths:
-                    archive_inbox_file(path)
+                archive_processed_inbox(paths, st.session_state.setdefault("pending", {}))
         else:
             st.info("Le dossier inbox/ est vide.")
 

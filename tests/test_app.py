@@ -78,3 +78,18 @@ def test_archive_inbox_file_moves_into_traites_subfolder(tmp_path):
     assert not original.exists()
     assert destination == inbox / "traites" / "facture.pdf"
     assert destination.read_bytes() == b"contenu"
+
+
+def test_archiving_inbox_updates_pending_paths(tmp_path):
+    inbox = tmp_path / "inbox"
+    inbox.mkdir()
+    original = inbox / "facture.pdf"
+    original.write_bytes(b"contenu")
+    result = object()
+    pending = {"facture.pdf": (original, result)}
+
+    app_main.archive_processed_inbox([original], pending)
+
+    archived = inbox / "traites" / "facture.pdf"
+    assert archived.exists()
+    assert pending["facture.pdf"] == (archived, result)
