@@ -1,7 +1,7 @@
 # Agent de traitement de factures et devis — Design
 
 **Date :** 2026-09-24
-**Statut :** validé en brainstorming, en attente de relecture
+**Statut :** validé (révisé le 2026-09-24 : sens des factures, voir §12)
 
 ## 1. Objectif
 
@@ -41,7 +41,7 @@ Il s'agit du premier projet d'une future suite d'« agents pour PME » (extensio
 4. Verdict par document : `ok`, `anomalie` (avec explication en langage naturel) ou `a_revoir`.
 5. Validation humaine : accepter, corriger les champs ou rejeter. **Rien n'est écrit en base avant la validation.**
 6. Enregistrement dans SQLite ; export CSV et Excel.
-7. Brouillon de relance pour les factures dont l'échéance est dépassée : affiché, copiable, **jamais envoyé**.
+7. Brouillon de relance pour les factures **émises** (clients) dont l'échéance est dépassée : affiché, copiable, **jamais envoyé**. Les factures **reçues** (fournisseurs) en retard sont signalées « à payer », sans relance.
 8. Tableau de bord : total restant à payer, échéances des 30 prochains jours, alertes en cours, journal des actions de l'agent, coût en tokens par document.
 
 ### Exclus (versions suivantes)
@@ -143,3 +143,15 @@ L'écriture en base (`save_invoice`) n'est donc **pas** un outil de l'agent : c'
 - Toutes les anomalies injectées sont détectées.
 - Suite de tests verte, sans clé d'API.
 - Un inconnu peut cloner le dépôt et lancer la démo en moins de 5 minutes en suivant le README.
+
+## 12. Révision : sens des factures (reçues / émises)
+
+Décision prise après relecture : une relance ne s'adresse qu'à un client. Le modèle distingue donc le sens du document par rapport à l'entreprise utilisatrice.
+
+- Nouveaux champs d'`Invoice` : `direction` (`recue` ou `emise`, obligatoire, déterminé par Claude à partir du nom de l'entreprise donné dans le prompt système) et `customer` (destinataire du document, optionnel).
+- Nom de l'entreprise configurable par la variable d'environnement `COMPANY_NAME` (défaut : `Atelier Lumière SAS`, l'entreprise fictive du jeu d'évaluation).
+- `check_due_date` : même code `ECHEANCE_DEPASSEE`, message « à payer » pour une facture reçue, « impayé client » pour une facture émise.
+- `draft_reminder` : uniquement pour les factures émises, adressé au client (`customer`).
+- Montant inhabituel : calculé uniquement sur les factures reçues d'un même fournisseur.
+- Tableau de bord : « À payer (fournisseurs) » et « À encaisser (clients) » séparés ; les brouillons de relance n'apparaissent que pour les factures clients impayées.
+- Jeu d'évaluation : 2 des 20 documents deviennent des factures émises, dont une en retard.

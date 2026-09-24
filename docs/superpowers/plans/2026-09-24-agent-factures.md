@@ -23,6 +23,7 @@
 - L'agent n'écrit **jamais** en base : seuls des outils en lecture seule lui sont exposés. L'écriture se fait dans `app/main.py` après clic sur « Accepter ».
 - Aucun test ne doit appeler l'API réelle (client factice injecté).
 - Textes visibles par l'utilisateur en français.
+- Sens des factures (spec §12) : `direction` = `recue` (fournisseur → entreprise) ou `emise` (entreprise → client). Nom de l'entreprise : variable d'environnement `COMPANY_NAME`, défaut `Atelier Lumière SAS`. Les relances ne concernent que les factures émises ; le montant inhabituel ne concerne que les factures reçues.
 - Clé d'API lue depuis `ANTHROPIC_API_KEY` (fichier `.env` ignoré par git).
 - Chaque message de commit se termine par la ligne `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`.
 - Écart assumé par rapport à la spec §4 : les modules vivent dans `src/agent_factures/` (package installable) au lieu de dossiers à la racine, pour que `app/`, `evals/` et `tests/` importent le même code sans bidouille de `sys.path`.
@@ -85,9 +86,10 @@ Expected : `uv 0.x.y` (uv téléchargera Python 3.12 automatiquement à la Task 
 **Interfaces :**
 - Produces :
   - `DocumentType(StrEnum)` : `INVOICE = "facture"`, `QUOTE = "devis"`
+  - `Direction(StrEnum)` : `RECEIVED = "recue"`, `ISSUED = "emise"`
   - `Status(StrEnum)` : `OK = "ok"`, `ANOMALY = "anomalie"`, `NEEDS_REVIEW = "a_revoir"`
   - `InvoiceLine(description: str, quantity: Decimal, unit_price: Decimal, total: Decimal)`
-  - `Invoice(doc_type, supplier, number, issue_date: date, due_date: date | None, amount_excl_tax, vat_amount, amount_incl_tax: Decimal, currency: str = "EUR", lines: list[InvoiceLine])`
+  - `Invoice(doc_type, direction: Direction, supplier, customer: str | None = None, number, issue_date: date, due_date: date | None, amount_excl_tax, vat_amount, amount_incl_tax: Decimal, currency: str = "EUR", lines: list[InvoiceLine])` — `supplier` = émetteur du document, `customer` = destinataire
   - `Issue(code: str, message: str)`
   - `Verdict(status: Status, explanation: str)`
   - `tests.factories.make_invoice(**overrides) -> Invoice`
@@ -128,7 +130,7 @@ uv add anthropic "pydantic>=2" streamlit pandas openpyxl python-dotenv reportlab
 uv add --dev pytest
 mkdir -p src/agent_factures/extraction tests inbox
 touch src/agent_factures/__init__.py src/agent_factures/extraction/__init__.py tests/__init__.py inbox/.gitkeep
-printf 'ANTHROPIC_API_KEY=\n' > .env.example
+printf 'ANTHROPIC_API_KEY=\nCOMPANY_NAME=Atelier Lumière SAS\n' > .env.example
 printf 'data/\n' >> .gitignore
 ```
 
@@ -146,7 +148,9 @@ from agent_factures.extraction.models import Invoice
 def make_invoice(**overrides) -> Invoice:
     data = {
         "doc_type": "facture",
+        "direction": "recue",
         "supplier": "Bureau Plus SARL",
+        "customer": "Atelier Lumière SAS",
         "number": "F-001",
         "issue_date": date(2026, 9, 1),
         "due_date": date(2026, 10, 1),
@@ -170,7 +174,7 @@ from decimal import Decimal
 import pytest
 from pydantic import ValidationError
 
-from agent_factures.extraction.models import DocumentType, Invoice, Status, Verdict
+from agent_factures.extraction.models import Direction, DocumentType, Invoice, Status, Verdict
 from tests.factories import make_invoice
 
 
@@ -178,6 +182,7 @@ def test_invoice_parses_claude_style_payload():
     invoice = Invoice.model_validate(
         {
             "doc_type": "facture",
+            "direction": "emise",
             "supplier": "Bureau Plus SARL",
             "number": "F-2026-101",
             "issue_date": "2026-09-01",
@@ -188,6 +193,8 @@ def test_invoice_parses_claude_style_payload():
         }
     )
     assert invoice.doc_type is DocumentType.INVOICE
+    assert invoice.direction is Direction.ISSUED
+    assert invoice.customer is None
     assert invoice.issue_date == date(2026, 9, 1)
     assert invoice.due_date is None
     assert invoice.amount_excl_tax == Decimal("100.1")
@@ -203,6 +210,13 @@ def test_invoice_rejects_empty_supplier():
 def test_invoice_rejects_unknown_doc_type():
     with pytest.raises(ValidationError):
         make_invoice(doc_type="bon de commande")
+
+
+def test_invoice_requires_a_known_direction():
+    with pytest.raises(ValidationError):
+        make_invoice(direction="sortante")
+    with pytest.raises(ValidationError):
+        make_invoice(direction=None)
 
 
 def test_verdict_accepts_known_status_and_rejects_others():
@@ -237,6 +251,11 @@ class DocumentType(StrEnum):
     QUOTE = "devis"
 
 
+class Direction(StrEnum):
+    RECEIVED = "recue"
+    ISSUED = "emise"
+
+
 class Status(StrEnum):
     OK = "ok"
     ANOMALY = "anomalie"
@@ -252,7 +271,9 @@ class InvoiceLine(BaseModel):
 
 class Invoice(BaseModel):
     doc_type: DocumentType
+    direction: Direction
     supplier: str = Field(min_length=1)
+    customer: str | None = None
     number: str = Field(min_length=1)
     issue_date: date
     due_date: date | None = None
@@ -276,7 +297,7 @@ class Verdict(BaseModel):
 - [ ] **Step 5 : vérifier que les tests passent**
 
 Run : `uv run pytest tests/test_models.py -v`
-Expected : 4 passed
+Expected : 5 passed
 
 - [ ] **Step 6 : commit**
 
@@ -299,7 +320,7 @@ git commit -m "feat: squelette du projet et modèles de données" -m "Co-Authore
   - `connect(path: str = ":memory:") -> sqlite3.Connection`
   - `supplier_key(name: str) -> str` (minuscules, espaces normalisés)
   - `StoredInvoice(id: int, invoice: Invoice, source_file: str)`
-  - `InvoiceRepository(conn)` : `add(invoice, source_file) -> int`, `get(invoice_id) -> StoredInvoice | None`, `find_by_supplier_and_number(supplier, number) -> list[StoredInvoice]`, `list_by_supplier(supplier) -> list[StoredInvoice]`, `list_overdue(today: date) -> list[StoredInvoice]`, `list_all() -> list[StoredInvoice]`
+  - `InvoiceRepository(conn)` : `add(invoice, source_file) -> int`, `get(invoice_id) -> StoredInvoice | None`, `find_by_supplier_and_number(supplier, number) -> list[StoredInvoice]`, `list_by_supplier(supplier) -> list[StoredInvoice]`, `list_overdue(today: date, direction: Direction | None = None) -> list[StoredInvoice]`, `list_all() -> list[StoredInvoice]`
   - `LogEntry(document: str, action: str, detail: dict, created_at: str)`
   - `ActionLog(conn)` : `record(document, action, detail: dict | None = None) -> None`, `list_for_document(document) -> list[LogEntry]`, `list_recent(limit: int = 50) -> list[LogEntry]`
 
@@ -361,6 +382,16 @@ def test_list_overdue_only_returns_invoices_past_due():
     assert [s.invoice.number for s in overdue] == ["late"]
 
 
+def test_list_overdue_can_filter_by_direction():
+    repo = make_repo()
+    repo.add(make_invoice(number="to-pay", due_date=date(2026, 9, 1)), "a.pdf")
+    repo.add(make_invoice(number="to-collect", direction="emise", due_date=date(2026, 9, 2)), "b.pdf")
+    today = date(2026, 9, 24)
+    assert [s.invoice.number for s in repo.list_overdue(today, direction="recue")] == ["to-pay"]
+    assert [s.invoice.number for s in repo.list_overdue(today, direction="emise")] == ["to-collect"]
+    assert len(repo.list_overdue(today)) == 2
+
+
 def test_list_all_in_insertion_order():
     repo = make_repo()
     repo.add(make_invoice(number="1"), "1.pdf")
@@ -403,6 +434,7 @@ CREATE TABLE IF NOT EXISTS invoices (
     supplier_key TEXT NOT NULL,
     number TEXT NOT NULL,
     doc_type TEXT NOT NULL,
+    direction TEXT NOT NULL,
     due_date TEXT,
     amount_incl_tax TEXT NOT NULL,
     data TEXT NOT NULL,
@@ -441,7 +473,7 @@ from datetime import date
 
 from pydantic import BaseModel
 
-from agent_factures.extraction.models import DocumentType, Invoice
+from agent_factures.extraction.models import Direction, DocumentType, Invoice
 from agent_factures.storage.db import supplier_key
 
 
@@ -457,12 +489,13 @@ class InvoiceRepository:
 
     def add(self, invoice: Invoice, source_file: str) -> int:
         cursor = self._conn.execute(
-            "INSERT INTO invoices (supplier_key, number, doc_type, due_date, amount_incl_tax, data, source_file)"
-            " VALUES (?, ?, ?, ?, ?, ?, ?)",
+            "INSERT INTO invoices (supplier_key, number, doc_type, direction, due_date, amount_incl_tax, data, source_file)"
+            " VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
             (
                 supplier_key(invoice.supplier),
                 invoice.number.strip(),
                 invoice.doc_type.value,
+                invoice.direction.value,
                 invoice.due_date.isoformat() if invoice.due_date else None,
                 str(invoice.amount_incl_tax),
                 invoice.model_dump_json(),
@@ -482,12 +515,13 @@ class InvoiceRepository:
     def list_by_supplier(self, supplier: str) -> list[StoredInvoice]:
         return self._select("WHERE supplier_key = ?", (supplier_key(supplier),))
 
-    def list_overdue(self, today: date) -> list[StoredInvoice]:
-        return self._select(
-            "WHERE doc_type = ? AND due_date IS NOT NULL AND due_date < ?",
-            (DocumentType.INVOICE.value, today.isoformat()),
-            order="due_date, id",
-        )
+    def list_overdue(self, today: date, direction: Direction | None = None) -> list[StoredInvoice]:
+        where = "WHERE doc_type = ? AND due_date IS NOT NULL AND due_date < ?"
+        params: tuple = (DocumentType.INVOICE.value, today.isoformat())
+        if direction is not None:
+            where += " AND direction = ?"
+            params += (Direction(direction).value,)
+        return self._select(where, params, order="due_date, id")
 
     def list_all(self) -> list[StoredInvoice]:
         return self._select("", ())
@@ -546,7 +580,7 @@ class ActionLog:
 - [ ] **Step 4 : vérifier que les tests passent**
 
 Run : `uv run pytest tests/test_storage.py -v`
-Expected : 7 passed
+Expected : 8 passed
 
 - [ ] **Step 5 : commit**
 
@@ -568,8 +602,8 @@ git commit -m "feat: stockage SQLite des factures et journal d'actions" -m "Co-A
 - Produces :
   - `TOLERANCE = Decimal("0.02")`
   - `check_amounts(invoice: Invoice) -> list[Issue]` (codes `TOTAL_INCOHERENT`, `LIGNES_INCOHERENTES`)
-  - `check_due_date(invoice: Invoice, today: date) -> Issue | None` (code `ECHEANCE_DEPASSEE`)
-  - `draft_reminder(invoice: Invoice, today: date) -> str`
+  - `check_due_date(invoice: Invoice, today: date) -> Issue | None` (code `ECHEANCE_DEPASSEE` ; message « à payer » si reçue, « impayé client » si émise)
+  - `draft_reminder(invoice: Invoice, today: date) -> str` (lève `ValueError` si la facture n'est pas émise ; s'adresse à `customer`)
 
 - [ ] **Step 1 : écrire les tests qui échouent**
 
@@ -610,11 +644,19 @@ def test_invoice_without_lines_skips_line_check():
     assert check_amounts(make_invoice(lines=[])) == []
 
 
-def test_overdue_invoice_is_flagged():
+def test_overdue_received_invoice_is_to_pay():
     issue = check_due_date(make_invoice(due_date=date(2026, 9, 10)), TODAY)
     assert issue is not None
     assert issue.code == "ECHEANCE_DEPASSEE"
     assert "14 jours" in issue.message
+    assert "à payer" in issue.message
+
+
+def test_overdue_issued_invoice_is_unpaid_by_customer():
+    issue = check_due_date(make_invoice(direction="emise", due_date=date(2026, 9, 10)), TODAY)
+    assert issue is not None
+    assert issue.code == "ECHEANCE_DEPASSEE"
+    assert "impayé client" in issue.message
 
 
 def test_due_today_or_later_is_fine():
@@ -631,17 +673,34 @@ def test_quote_and_missing_due_date_are_ignored():
 ```python
 from datetime import date
 
+import pytest
+
 from agent_factures.tools.reminder import draft_reminder
 from tests.factories import make_invoice
 
+TODAY = date(2026, 9, 24)
 
-def test_reminder_mentions_key_facts():
-    text = draft_reminder(make_invoice(number="F-042", due_date=date(2026, 9, 10)), date(2026, 9, 24))
-    assert "F-042" in text
-    assert "Bureau Plus SARL" in text
+
+def test_reminder_is_addressed_to_the_customer():
+    invoice = make_invoice(
+        direction="emise",
+        supplier="Atelier Lumière SAS",
+        customer="Hôtel Bellevue",
+        number="AL-042",
+        due_date=date(2026, 9, 10),
+    )
+    text = draft_reminder(invoice, TODAY)
+    assert "AL-042" in text
+    assert "Hôtel Bellevue" in text
     assert "120,00 €" in text
     assert "10/09/2026" in text
     assert "14 jours" in text
+    assert "Atelier Lumière SAS" in text
+
+
+def test_reminder_refuses_received_invoices():
+    with pytest.raises(ValueError, match="émise"):
+        draft_reminder(make_invoice(direction="recue"), TODAY)
 ```
 
 - [ ] **Step 2 : vérifier que les tests échouent**
@@ -663,7 +722,7 @@ mkdir -p src/agent_factures/tools && touch src/agent_factures/tools/__init__.py
 from datetime import date
 from decimal import Decimal
 
-from agent_factures.extraction.models import DocumentType, Invoice, Issue
+from agent_factures.extraction.models import Direction, DocumentType, Invoice, Issue
 
 TOLERANCE = Decimal("0.02")
 
@@ -696,21 +755,22 @@ def check_due_date(invoice: Invoice, today: date) -> Issue | None:
     days_late = (today - invoice.due_date).days
     if days_late <= 0:
         return None
+    consequence = "impayé client, relance à prévoir" if invoice.direction is Direction.ISSUED else "facture à payer"
     return Issue(
         code="ECHEANCE_DEPASSEE",
-        message=f"Échéance du {invoice.due_date:%d/%m/%Y} dépassée de {days_late} jours.",
+        message=f"Échéance du {invoice.due_date:%d/%m/%Y} dépassée de {days_late} jours ({consequence}).",
     )
 ```
 
 `src/agent_factures/tools/reminder.py` :
 
 ```python
-"""Brouillon de relance pour une facture en retard. Rien n'est envoyé."""
+"""Brouillon de relance d'un client pour une facture émise impayée. Rien n'est envoyé."""
 
 from datetime import date
 from decimal import Decimal
 
-from agent_factures.extraction.models import Invoice
+from agent_factures.extraction.models import Direction, Invoice
 
 
 def _euros(amount: Decimal) -> str:
@@ -718,22 +778,27 @@ def _euros(amount: Decimal) -> str:
 
 
 def draft_reminder(invoice: Invoice, today: date) -> str:
+    if invoice.direction is not Direction.ISSUED:
+        raise ValueError("Une relance ne concerne qu'une facture émise vers un client.")
     due = invoice.due_date or today
     days_late = max((today - due).days, 0)
     return (
+        f"À : {invoice.customer or 'client'}\n"
         f"Objet : facture n° {invoice.number} — échéance dépassée\n\n"
         f"Bonjour,\n\n"
-        f"La facture n° {invoice.number} ({invoice.supplier}) d'un montant de {_euros(invoice.amount_incl_tax)} TTC "
-        f"est arrivée à échéance le {due:%d/%m/%Y}, soit un retard de {days_late} jours.\n\n"
-        f"Pourriez-vous nous confirmer la date de règlement prévue ?\n\n"
-        f"Cordialement,"
+        f"Sauf erreur de notre part, notre facture n° {invoice.number} d'un montant de "
+        f"{_euros(invoice.amount_incl_tax)} TTC est arrivée à échéance le {due:%d/%m/%Y}, "
+        f"soit un retard de {days_late} jours.\n\n"
+        f"Pourriez-vous nous indiquer la date de règlement prévue ? Si le paiement a été effectué entre-temps, "
+        f"merci de ne pas tenir compte de ce message.\n\n"
+        f"Cordialement,\n{invoice.supplier}"
     )
 ```
 
 - [ ] **Step 4 : vérifier que les tests passent**
 
 Run : `uv run pytest tests/test_checks.py tests/test_reminder.py -v`
-Expected : 9 passed
+Expected : 11 passed
 
 - [ ] **Step 5 : commit**
 
@@ -755,9 +820,9 @@ git commit -m "feat: vérifications des montants et échéances, brouillon de re
 - Produces :
   - `find_duplicates(repo, supplier: str, number: str) -> list[StoredInvoice]`
   - `SupplierStats(supplier: str, count: int, average_incl_tax: Decimal | None)`
-  - `get_supplier_history(repo, supplier: str) -> SupplierStats` (factures uniquement, devis exclus)
+  - `get_supplier_history(repo, supplier: str) -> SupplierStats` (factures **reçues** uniquement ; devis et factures émises exclus)
   - `MIN_HISTORY = 3`, `UNUSUAL_FACTOR = Decimal("3")`
-  - `check_unusual_amount(invoice: Invoice, stats: SupplierStats) -> Issue | None` (code `MONTANT_INHABITUEL`)
+  - `check_unusual_amount(invoice: Invoice, stats: SupplierStats) -> Issue | None` (code `MONTANT_INHABITUEL` ; toujours `None` pour une facture émise)
 
 - [ ] **Step 1 : écrire les tests qui échouent**
 
@@ -790,12 +855,13 @@ def test_find_duplicates_matches_supplier_and_number():
     assert find_duplicates(repo, "Bureau Plus SARL", "F-3") == []
 
 
-def test_supplier_history_averages_invoices_only():
+def test_supplier_history_averages_received_invoices_only():
     repo = repo_with(
         make_invoice(number="1", amount_incl_tax=Decimal("100")),
         make_invoice(number="2", amount_incl_tax=Decimal("110")),
         make_invoice(number="3", amount_incl_tax=Decimal("120")),
         make_invoice(number="D1", doc_type="devis", amount_incl_tax=Decimal("9999")),
+        make_invoice(number="E1", direction="emise", amount_incl_tax=Decimal("9999")),
     )
     stats = get_supplier_history(repo, "Bureau Plus SARL")
     assert stats.count == 3
@@ -814,6 +880,11 @@ def test_unusual_amount_requires_three_invoices_and_strictly_more_than_triple():
     assert check_unusual_amount(make_invoice(amount_incl_tax=Decimal("300")), stats) is None
     short = SupplierStats(supplier="X", count=2, average_incl_tax=Decimal("100"))
     assert check_unusual_amount(make_invoice(amount_incl_tax=Decimal("1000")), short) is None
+
+
+def test_issued_invoices_are_never_unusual():
+    stats = SupplierStats(supplier="X", count=5, average_incl_tax=Decimal("100"))
+    assert check_unusual_amount(make_invoice(direction="emise", amount_incl_tax=Decimal("5000")), stats) is None
 ```
 
 - [ ] **Step 2 : vérifier que les tests échouent**
@@ -832,7 +903,7 @@ from decimal import Decimal
 
 from pydantic import BaseModel
 
-from agent_factures.extraction.models import DocumentType, Invoice, Issue
+from agent_factures.extraction.models import Direction, DocumentType, Invoice, Issue
 from agent_factures.storage.repository import InvoiceRepository, StoredInvoice
 
 MIN_HISTORY = 3
@@ -850,7 +921,11 @@ def find_duplicates(repo: InvoiceRepository, supplier: str, number: str) -> list
 
 
 def get_supplier_history(repo: InvoiceRepository, supplier: str) -> SupplierStats:
-    invoices = [s.invoice for s in repo.list_by_supplier(supplier) if s.invoice.doc_type is DocumentType.INVOICE]
+    invoices = [
+        s.invoice
+        for s in repo.list_by_supplier(supplier)
+        if s.invoice.doc_type is DocumentType.INVOICE and s.invoice.direction is Direction.RECEIVED
+    ]
     if not invoices:
         return SupplierStats(supplier=supplier, count=0, average_incl_tax=None)
     total = sum((i.amount_incl_tax for i in invoices), Decimal("0"))
@@ -858,7 +933,7 @@ def get_supplier_history(repo: InvoiceRepository, supplier: str) -> SupplierStat
 
 
 def check_unusual_amount(invoice: Invoice, stats: SupplierStats) -> Issue | None:
-    if stats.count < MIN_HISTORY or stats.average_incl_tax is None:
+    if invoice.direction is Direction.ISSUED or stats.count < MIN_HISTORY or stats.average_incl_tax is None:
         return None
     threshold = stats.average_incl_tax * UNUSUAL_FACTOR
     if invoice.amount_incl_tax <= threshold:
@@ -875,7 +950,7 @@ def check_unusual_amount(invoice: Invoice, stats: SupplierStats) -> Issue | None
 - [ ] **Step 4 : vérifier que les tests passent**
 
 Run : `uv run pytest tests/test_history.py -v`
-Expected : 4 passed
+Expected : 5 passed
 
 - [ ] **Step 5 : commit**
 
@@ -1021,7 +1096,7 @@ def load_document(path: Path) -> dict:
 ```python
 """Définition des outils exposés à Claude. Aucun n'écrit en base."""
 
-from agent_factures.extraction.models import DocumentType, Status
+from agent_factures.extraction.models import Direction, DocumentType, Status
 
 NO_INPUT = {"type": "object", "properties": {}}
 
@@ -1029,7 +1104,16 @@ INVOICE_SCHEMA = {
     "type": "object",
     "properties": {
         "doc_type": {"type": "string", "enum": [t.value for t in DocumentType], "description": "Nature du document."},
+        "direction": {
+            "type": "string",
+            "enum": [d.value for d in Direction],
+            "description": "« emise » si l'entreprise utilisatrice est l'émettrice du document, « recue » sinon.",
+        },
         "supplier": {"type": "string", "description": "Raison sociale de l'émetteur du document."},
+        "customer": {
+            "type": ["string", "null"],
+            "description": "Raison sociale du destinataire du document, ou null si absente.",
+        },
         "number": {"type": "string", "description": "Numéro de facture ou de devis, tel qu'imprimé."},
         "issue_date": {"type": "string", "description": "Date d'émission au format AAAA-MM-JJ."},
         "due_date": {
@@ -1055,7 +1139,9 @@ INVOICE_SCHEMA = {
             },
         },
     },
-    "required": ["doc_type", "supplier", "number", "issue_date", "amount_excl_tax", "vat_amount", "amount_incl_tax"],
+    "required": [
+        "doc_type", "direction", "supplier", "number", "issue_date", "amount_excl_tax", "vat_amount", "amount_incl_tax",
+    ],
 }
 
 VERDICT_SCHEMA = {
@@ -1415,9 +1501,9 @@ git commit -m "feat: exécuteur des outils de l'agent" -m "Co-Authored-By: Claud
 - Consumes : `load_document`, `DocumentError` (Task 5) ; `TOOLS` (Task 5) ; `ToolExecutor`, `ToolCall` (Task 6) ; `Invoice`, `Issue`, `Status`, `Verdict` (Task 1) ; `InvoiceRepository` (Task 2)
 - Produces :
   - `MODELS = ["claude-sonnet-5", "claude-haiku-4-5"]`, `DEFAULT_MODEL = "claude-sonnet-5"`, `PRICES_PER_MTOK: dict[str, tuple[float, float]]`
-  - `SYSTEM_PROMPT: str`, `USER_INSTRUCTION: str`
+  - `DEFAULT_COMPANY = "Atelier Lumière SAS"`, `SYSTEM_PROMPT_TEMPLATE: str` (contient `{company}`), `USER_INSTRUCTION: str`
   - `AgentResult` (dataclass) : `invoice: Invoice | None`, `partial_extraction: dict | None`, `verdict: Verdict`, `issues: list[Issue]`, `trace: list[ToolCall]`, `input_tokens: int`, `output_tokens: int`, `cost_usd: float | None`
-  - `InvoiceAgent(client, repo, model=DEFAULT_MODEL, today: date | None = None, max_iterations: int = 10)` avec `process(path: Path) -> AgentResult`
+  - `InvoiceAgent(client, repo, model=DEFAULT_MODEL, today: date | None = None, max_iterations: int = 10, company: str = DEFAULT_COMPANY)` avec `process(path: Path) -> AgentResult`
   - `tests.fakes` : `tool_use(name, tool_input, id=None)`, `reply(*blocks, stop_reason="tool_use", input_tokens=100, output_tokens=50)`, `FakeClient(responses)` avec `.calls`
 
 - [ ] **Step 1 : écrire le client factice et les tests qui échouent**
@@ -1512,6 +1598,7 @@ def test_happy_path(pdf):
     assert len(client.calls) == 3
     first = client.calls[0]
     assert first["model"] == "claude-sonnet-5"
+    assert "Atelier Lumière SAS" in first["system"]
     assert first["messages"][0]["content"][0]["type"] == "document"
     results_message = client.calls[2]["messages"][-1]
     assert results_message["role"] == "user"
@@ -1584,6 +1671,15 @@ def test_ok_verdict_is_downgraded_when_issues_exist(pdf):
     assert "TOTAL_INCOHERENT" in result.verdict.explanation
 
 
+def test_company_name_is_configurable(pdf):
+    _, client, _ = run(
+        [reply(tool_use("submit_verdict", {"status": "a_revoir", "explanation": "Illisible."}))],
+        pdf,
+        company="Boulangerie Durand",
+    )
+    assert "Boulangerie Durand" in client.calls[0]["system"]
+
+
 def test_unknown_model_has_no_cost(pdf):
     result, _, _ = run(
         [reply(tool_use("submit_verdict", {"status": "a_revoir", "explanation": "Ce n'est pas une facture."}))],
@@ -1621,11 +1717,12 @@ MODELS = ["claude-sonnet-5", "claude-haiku-4-5"]
 DEFAULT_MODEL = "claude-sonnet-5"
 PRICES_PER_MTOK = {"claude-sonnet-5": (2.00, 10.00), "claude-haiku-4-5": (1.00, 5.00)}
 MAX_TOKENS = 16000
+DEFAULT_COMPANY = "Atelier Lumière SAS"
 
-SYSTEM_PROMPT = """Tu es l'assistant comptable d'une PME française. Tu traites un seul document à la fois.
+SYSTEM_PROMPT_TEMPLATE = """Tu es l'assistant comptable de l'entreprise « {company} », une PME française. Tu traites un seul document à la fois.
 
 1. Si le document n'est ni une facture ni un devis, appelle directement submit_verdict avec le statut "a_revoir" en expliquant ce que c'est.
-2. Sinon, extrais ses données et appelle submit_extraction. Montants en nombres, dates au format AAAA-MM-JJ. N'invente aucune valeur : si l'échéance n'apparaît pas, mets null.
+2. Sinon, extrais ses données et appelle submit_extraction. Montants en nombres, dates au format AAAA-MM-JJ. N'invente aucune valeur : si l'échéance n'apparaît pas, mets null. Le sens est « emise » si {company} est l'émetteur du document, « recue » si c'est un fournisseur qui l'a émis.
 3. Si submit_extraction renvoie une erreur, corrige l'extraction et renvoie-la.
 4. Lance ensuite les vérifications utiles (check_amounts, check_due_date, find_duplicates, get_supplier_history). Tu peux les appeler en parallèle.
 5. Termine par submit_verdict : "ok" si aucun problème, "anomalie" si au moins un problème a été détecté, "a_revoir" si le document est illisible ou ambigu. L'explication s'adresse à un gestionnaire non technique, en 1 à 3 phrases."""
@@ -1653,12 +1750,14 @@ class InvoiceAgent:
         model: str = DEFAULT_MODEL,
         today: date | None = None,
         max_iterations: int = 10,
+        company: str = DEFAULT_COMPANY,
     ):
         self.client = client
         self.repo = repo
         self.model = model
         self.today = today or date.today()
         self.max_iterations = max_iterations
+        self.system_prompt = SYSTEM_PROMPT_TEMPLATE.format(company=company)
 
     def process(self, path: Path) -> AgentResult:
         executor = ToolExecutor(self.repo, self.today)
@@ -1674,7 +1773,7 @@ class InvoiceAgent:
                 response = self.client.messages.create(
                     model=self.model,
                     max_tokens=MAX_TOKENS,
-                    system=SYSTEM_PROMPT,
+                    system=self.system_prompt,
                     tools=TOOLS,
                     messages=messages,
                 )
@@ -1724,12 +1823,12 @@ class InvoiceAgent:
 - [ ] **Step 4 : vérifier que les tests passent**
 
 Run : `uv run pytest tests/test_loop.py -v`
-Expected : 9 passed
+Expected : 10 passed
 
 - [ ] **Step 5 : lancer toute la suite**
 
 Run : `uv run pytest -v`
-Expected : tous les tests passent (54 à ce stade)
+Expected : tous les tests passent (60 à ce stade)
 
 - [ ] **Step 6 : commit**
 
@@ -1773,6 +1872,8 @@ def test_rows_are_flat_and_ordered():
     rows = to_rows(STORED)
     assert list(rows[0]) == COLUMNS
     assert rows[0]["numero"] == "F-1"
+    assert rows[0]["sens"] == "recue"
+    assert rows[0]["destinataire"] == "Atelier Lumière SAS"
     assert rows[0]["montant_ttc"] == 120.0
     assert rows[1]["echeance"] is None
 
@@ -1809,7 +1910,7 @@ import pandas as pd
 from agent_factures.storage.repository import StoredInvoice
 
 COLUMNS = [
-    "id", "type", "fournisseur", "numero", "date_emission", "echeance",
+    "id", "type", "sens", "emetteur", "destinataire", "numero", "date_emission", "echeance",
     "montant_ht", "tva", "montant_ttc", "devise", "fichier",
 ]
 
@@ -1819,7 +1920,9 @@ def to_rows(stored: list[StoredInvoice]) -> list[dict]:
         {
             "id": s.id,
             "type": s.invoice.doc_type.value,
-            "fournisseur": s.invoice.supplier,
+            "sens": s.invoice.direction.value,
+            "emetteur": s.invoice.supplier,
+            "destinataire": s.invoice.customer,
             "numero": s.invoice.number,
             "date_emission": s.invoice.issue_date.isoformat(),
             "echeance": s.invoice.due_date.isoformat() if s.invoice.due_date else None,
@@ -1869,7 +1972,7 @@ git commit -m "feat: exports CSV et Excel" -m "Co-Authored-By: Claude Opus 5.5 <
 
 **Interfaces :**
 - Consumes : `InvoiceAgent`, `AgentResult`, `MODELS`, `DEFAULT_MODEL` (Task 7) ; `Invoice`, `DocumentType`, `Status` (Task 1) ; `connect`, `InvoiceRepository`, `ActionLog` (Task 2) ; `to_rows`, `to_csv_bytes`, `to_excel_bytes` (Task 8) ; `draft_reminder` (Task 3)
-- Produces : application lancée par `uv run streamlit run app/main.py`. Variable d'environnement `AGENT_FACTURES_DB` (défaut `data/factures.db`).
+- Produces : application lancée par `uv run streamlit run app/main.py`. Variables d'environnement `AGENT_FACTURES_DB` (défaut `data/factures.db`) et `COMPANY_NAME` (défaut `DEFAULT_COMPANY`).
 
 - [ ] **Step 1 : écrire les tests qui échouent**
 
@@ -1896,9 +1999,9 @@ def test_dashboard_shows_stored_invoices(tmp_path, monkeypatch):
     monkeypatch.setenv("AGENT_FACTURES_DB", str(db_path))
     at = AppTest.from_file("app/main.py", default_timeout=30).run()
     assert not at.exception
-    labels = [m.label for m in at.metric]
-    assert "Total factures (TTC)" in labels
-    assert "120,00 €" in [m.value for m in at.metric]
+    metrics = {m.label: m.value for m in at.metric}
+    assert metrics["À payer (fournisseurs, TTC)"] == "120,00 €"
+    assert metrics["À encaisser (clients, TTC)"] == "0,00 €"
 ```
 
 - [ ] **Step 2 : vérifier que les tests échouent**
@@ -1928,8 +2031,8 @@ import streamlit as st
 from dotenv import load_dotenv
 from pydantic import ValidationError
 
-from agent_factures.agent.loop import DEFAULT_MODEL, MODELS, AgentResult, InvoiceAgent
-from agent_factures.extraction.models import DocumentType, Invoice, Status
+from agent_factures.agent.loop import DEFAULT_COMPANY, DEFAULT_MODEL, MODELS, AgentResult, InvoiceAgent
+from agent_factures.extraction.models import Direction, DocumentType, Invoice, Status
 from agent_factures.storage.action_log import ActionLog
 from agent_factures.storage.db import connect
 from agent_factures.storage.export import to_csv_bytes, to_excel_bytes, to_rows
@@ -1938,6 +2041,7 @@ from agent_factures.tools.reminder import draft_reminder
 
 load_dotenv()
 
+COMPANY = os.environ.get("COMPANY_NAME", DEFAULT_COMPANY)
 UPLOAD_DIR = Path("data/uploads")
 INBOX_DIR = Path("inbox")
 ACCEPTED_TYPES = ["pdf", "png", "jpg", "jpeg"]
@@ -1956,7 +2060,7 @@ def get_connection(path: str):
 
 def process_files(paths: list[Path], repo: InvoiceRepository, log: ActionLog, model: str) -> None:
     try:
-        agent = InvoiceAgent(client=anthropic.Anthropic(), repo=repo, model=model)
+        agent = InvoiceAgent(client=anthropic.Anthropic(), repo=repo, model=model, company=COMPANY)
     except anthropic.AnthropicError as exc:
         st.error(f"Client Claude indisponible : {exc}. Vérifie ANTHROPIC_API_KEY dans le fichier .env.")
         return
@@ -2015,11 +2119,22 @@ def render_review(name: str, path: Path, result: AgentResult, repo: InvoiceRepos
 
         doc_types = [t.value for t in DocumentType]
         current_type = str(_default(result, "doc_type") or DocumentType.INVOICE.value)
+        directions = [d.value for d in Direction]
+        current_direction = str(_default(result, "direction") or Direction.RECEIVED.value)
         with st.form(f"form-{name}"):
-            doc_type = st.selectbox(
+            col_type, col_direction = st.columns(2)
+            doc_type = col_type.selectbox(
                 "Type", doc_types, index=doc_types.index(current_type) if current_type in doc_types else 0
             )
-            supplier = st.text_input("Fournisseur", value=str(_default(result, "supplier") or ""))
+            direction = col_direction.selectbox(
+                "Sens",
+                directions,
+                index=directions.index(current_direction) if current_direction in directions else 0,
+                format_func=lambda d: "Reçue (fournisseur)" if d == Direction.RECEIVED.value else "Émise (client)",
+            )
+            col_from, col_to = st.columns(2)
+            supplier = col_from.text_input("Émetteur", value=str(_default(result, "supplier") or ""))
+            customer = col_to.text_input("Destinataire", value=str(_default(result, "customer") or ""))
             number = st.text_input("Numéro", value=str(_default(result, "number") or ""))
             col1, col2 = st.columns(2)
             issue_date = col1.date_input("Date d'émission", value=_as_date(_default(result, "issue_date")), format="DD/MM/YYYY")
@@ -2035,7 +2150,9 @@ def render_review(name: str, path: Path, result: AgentResult, repo: InvoiceRepos
             try:
                 invoice = Invoice(
                     doc_type=doc_type,
+                    direction=direction,
                     supplier=supplier,
+                    customer=customer or None,
                     number=number,
                     issue_date=issue_date,
                     due_date=due_date,
@@ -2082,21 +2199,32 @@ def render_process_tab(repo: InvoiceRepository, log: ActionLog, model: str) -> N
 def render_dashboard(repo: InvoiceRepository, today: date) -> None:
     stored = repo.list_all()
     invoices = [s for s in stored if s.invoice.doc_type is DocumentType.INVOICE]
-    total = sum((s.invoice.amount_incl_tax for s in invoices), Decimal("0"))
+    to_pay = sum((s.invoice.amount_incl_tax for s in invoices if s.invoice.direction is Direction.RECEIVED), Decimal("0"))
+    to_collect = sum((s.invoice.amount_incl_tax for s in invoices if s.invoice.direction is Direction.ISSUED), Decimal("0"))
     upcoming = [s for s in invoices if s.invoice.due_date and today <= s.invoice.due_date <= today + timedelta(days=30)]
-    overdue = repo.list_overdue(today)
+    late_suppliers = repo.list_overdue(today, direction=Direction.RECEIVED)
+    late_customers = repo.list_overdue(today, direction=Direction.ISSUED)
 
-    col1, col2, col3 = st.columns(3)
-    col1.metric("Total factures (TTC)", euros(total))
-    col2.metric("Échéances sous 30 jours", len(upcoming))
-    col3.metric("Factures en retard", len(overdue))
+    col1, col2, col3, col4 = st.columns(4)
+    col1.metric("À payer (fournisseurs, TTC)", euros(to_pay))
+    col2.metric("À encaisser (clients, TTC)", euros(to_collect))
+    col3.metric("Échéances sous 30 jours", len(upcoming))
+    col4.metric("Factures en retard", len(late_suppliers) + len(late_customers))
 
-    if overdue:
-        st.subheader("Factures en retard")
-        for s in overdue:
-            with st.expander(f"{s.invoice.supplier} — n° {s.invoice.number} — {euros(s.invoice.amount_incl_tax)}"):
+    if late_customers:
+        st.subheader("Clients en retard de paiement")
+        for s in late_customers:
+            with st.expander(f"{s.invoice.customer or 'Client'} — n° {s.invoice.number} — {euros(s.invoice.amount_incl_tax)}"):
                 st.caption("Brouillon de relance (rien n'est envoyé automatiquement) :")
                 st.code(draft_reminder(s.invoice, today), language=None)
+
+    if late_suppliers:
+        st.subheader("Factures fournisseurs à payer en retard")
+        for s in late_suppliers:
+            st.warning(
+                f"{s.invoice.supplier} — n° {s.invoice.number} — {euros(s.invoice.amount_incl_tax)}, "
+                f"échue le {s.invoice.due_date:%d/%m/%Y}"
+            )
 
     st.subheader("Pièces enregistrées")
     if not stored:
@@ -2173,7 +2301,7 @@ git commit -m "feat: interface Streamlit (dépôt, validation, tableau de bord, 
   - `evals.generate.TODAY = date(2026, 9, 24)`
   - `evals.generate.build_specs() -> list[dict]` : 20 entrées dans l'ordre de traitement
   - `evals.generate.generate(out_dir: Path) -> list[dict]` : écrit les fichiers et `expected.json`
-  - Format de `expected.json` : `{"today": "2026-09-24", "documents": [{"file": str, "expected_status": "ok"|"anomalie"|"a_revoir", "expected_issues": [str], "accept": bool, "invoice": {doc_type, supplier, number, issue_date, due_date, amount_excl_tax, vat_amount, amount_incl_tax} | null}]}`
+  - Format de `expected.json` : `{"today": "2026-09-24", "documents": [{"file": str, "expected_status": "ok"|"anomalie"|"a_revoir", "expected_issues": [str], "accept": bool, "invoice": {doc_type, direction, supplier, customer, number, issue_date, due_date, amount_excl_tax, vat_amount, amount_incl_tax} | null}]}`
 
 - [ ] **Step 1 : écrire les tests qui échouent**
 
@@ -2197,6 +2325,9 @@ def test_dataset_composition_matches_spec():
     assert sum(1 for s in specs if s["invoice"] and s["invoice"]["doc_type"] == "devis") == 2
     assert sum(1 for s in specs if s["invoice"] is None) == 1
     assert sum(1 for s in specs if s["file"].endswith(".png")) == 1
+    issued = [s for s in specs if s["invoice"] and s["invoice"]["direction"] == "emise"]
+    assert len(issued) == 2
+    assert sum(1 for s in issued if "ECHEANCE_DEPASSEE" in s["expected_issues"]) == 1
 
 
 def test_statuses_follow_issues():
@@ -2256,17 +2387,20 @@ from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 
 TODAY = date(2026, 9, 24)
-CLIENT = "Atelier Lumière SAS — 12 rue des Arts, 69002 Lyon"
+COMPANY = "Atelier Lumière SAS"
 DATASET_DIR = Path(__file__).parent / "dataset"
 CENT = Decimal("0.01")
 MONTHS = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août",
           "septembre", "octobre", "novembre", "décembre"]
 
-SUPPLIERS = {
+ADDRESSES = {
+    COMPANY: "12 rue des Arts, 69002 Lyon",
     "Bureau Plus SARL": "8 avenue Jean Jaurès, 69007 Lyon",
     "Imprimerie Dupont": "45 rue Garibaldi, 69003 Lyon",
     "TechNet Services": "3 place Bellecour, 69002 Lyon",
     "Transports Martin": "Zone Industrielle Nord, 69120 Vaulx-en-Velin",
+    "Hôtel Bellevue": "2 quai Saint-Antoine, 69002 Lyon",
+    "Café des Arts": "7 rue Mercière, 69002 Lyon",
 }
 
 
@@ -2275,7 +2409,7 @@ def money(value) -> Decimal:
 
 
 def doc(file, supplier, number, issue, lines, *, doc_type="facture", due_days=30,
-        vat_error=None, issues=(), accept=True):
+        vat_error=None, issues=(), accept=True, direction="recue", customer=COMPANY):
     ht = sum((money(q * money(p)) for _, q, p in lines), Decimal("0"))
     vat = money(ht * Decimal("0.20"))
     ttc = ht + vat
@@ -2291,7 +2425,9 @@ def doc(file, supplier, number, issue, lines, *, doc_type="facture", due_days=30
         "accept": accept,
         "invoice": {
             "doc_type": doc_type,
+            "direction": direction,
             "supplier": supplier,
+            "customer": customer,
             "number": number,
             "issue_date": issue.isoformat(),
             "due_date": due.isoformat() if due else None,
@@ -2332,8 +2468,9 @@ def build_specs() -> list[dict]:
             [("Livraison Lyon - Annecy", 1, 240.0)]),
         doc("12_bureau_plus_inhabituel.pdf", "Bureau Plus SARL", "F-2026-150", d(2026, 9, 18),
             [("Bureaux assis-debout", 8, 495.0)], issues=["MONTANT_INHABITUEL"]),
-        doc("13_technet.pdf", "TechNet Services", "TN-915", d(2026, 9, 19),
-            [("Intervention sur site (heure)", 3, 85.0)]),
+        doc("13_emise_bellevue.pdf", COMPANY, "AL-2026-057", d(2026, 8, 5),
+            [("Luminaires sur mesure", 3, 420.0), ("Pose", 1, 180.0)],
+            direction="emise", customer="Hôtel Bellevue"),
         {
             "file": "14_courrier.pdf",
             "expected_status": "a_revoir",
@@ -2352,8 +2489,8 @@ def build_specs() -> list[dict]:
             [("Remplacement serveur", 1, 2400.0), ("Installation", 1, 450.0)], doc_type="devis"),
         doc("18_bureau_plus.pdf", "Bureau Plus SARL", "F-2026-162", d(2026, 9, 22),
             [("Enveloppes (x500)", 2, 19.0)]),
-        doc("19_technet.pdf", "TechNet Services", "TN-930", d(2026, 9, 22),
-            [("Hébergement web (mois)", 1, 49.0)]),
+        doc("19_emise_cafe.pdf", COMPANY, "AL-2026-071", d(2026, 9, 22),
+            [("Suspensions design", 4, 145.0)], direction="emise", customer="Café des Arts"),
         doc("20_dupont.pdf", "Imprimerie Dupont", "4701", d(2026, 9, 23),
             [("Étiquettes adhésives x2000", 1, 132.0)]),
     ]
@@ -2370,13 +2507,13 @@ def _fmt_money(value: Decimal) -> str:
 def _text_lines(spec: dict, layout: int) -> list[str]:
     inv = spec["invoice"]
     title = "FACTURE" if inv["doc_type"] == "facture" else "DEVIS"
-    out = [inv["supplier"], SUPPLIERS[inv["supplier"]], "", f"{title} N° {inv['number']}",
+    out = [inv["supplier"], ADDRESSES[inv["supplier"]], "", f"{title} N° {inv['number']}",
            f"Date : {_fmt_date(date.fromisoformat(inv['issue_date']), layout)}"]
     if inv["due_date"]:
         out.append(f"Échéance : {_fmt_date(date.fromisoformat(inv['due_date']), layout)}")
     else:
         out.append("Devis valable 30 jours")
-    out += ["", f"Client : {CLIENT}", "", "Désignation | Qté | PU HT | Total HT"]
+    out += ["", f"Client : {inv['customer']}", ADDRESSES[inv["customer"]], "", "Désignation | Qté | PU HT | Total HT"]
     for label, qty, price in spec["lines"]:
         total = money(qty * Decimal(price))
         out.append(f"{label} | {qty} | {_fmt_money(Decimal(price))} | {_fmt_money(total)}")
@@ -2500,8 +2637,8 @@ from evals.scoring import DocOutcome, field_matches, summarize, to_markdown
 from tests.factories import make_invoice
 
 EXPECTED_INVOICE = json.loads(
-    make_invoice().model_dump_json(include={"doc_type", "supplier", "number", "issue_date", "due_date",
-                                            "amount_excl_tax", "vat_amount", "amount_incl_tax"})
+    make_invoice().model_dump_json(include={"doc_type", "direction", "supplier", "customer", "number", "issue_date",
+                                            "due_date", "amount_excl_tax", "vat_amount", "amount_incl_tax"})
 )
 
 
@@ -2573,7 +2710,10 @@ from statistics import mean
 
 from agent_factures.extraction.models import Invoice
 
-FIELDS = ["doc_type", "supplier", "number", "issue_date", "due_date", "amount_excl_tax", "vat_amount", "amount_incl_tax"]
+FIELDS = [
+    "doc_type", "direction", "supplier", "customer", "number", "issue_date", "due_date",
+    "amount_excl_tax", "vat_amount", "amount_incl_tax",
+]
 MONEY_FIELDS = {"amount_excl_tax", "vat_amount", "amount_incl_tax"}
 MONEY_TOLERANCE = Decimal("0.01")
 
@@ -2778,20 +2918,20 @@ git commit -m "docs: résultats des évaluations Sonnet 5 et Haiku 4.5" -m "Co-A
 ````markdown
 # Agent factures
 
-**Un agent IA qui lit vos factures fournisseurs, en extrait les données, repère les erreurs et prépare les relances, sous votre contrôle.**
+**Un agent IA qui lit vos factures, en extrait les données, repère les erreurs et prépare les relances clients, sous votre contrôle.**
 
-Dans une PME, saisir et vérifier les factures fournisseurs prend plusieurs heures par semaine : recopier les montants, repérer les doublons, surveiller les échéances. Cet agent fait le travail préparatoire, et un humain valide chaque pièce en quelques secondes.
+Dans une PME, saisir et vérifier les factures prend plusieurs heures par semaine : recopier les montants, repérer les doublons, surveiller ce qu'il reste à payer aux fournisseurs et à encaisser auprès des clients. Cet agent fait le travail préparatoire, et un humain valide chaque pièce en quelques secondes.
 
 <!-- Ajouter ici un GIF de démo : docs/demo.gif -->
 
 ## Ce que fait l'agent
 
 1. **Lit** les factures et devis en PDF ou en image (y compris des scans).
-2. **Extrait** le fournisseur, le numéro, les dates, les montants HT, TVA et TTC, et les lignes de détail.
+2. **Extrait** l'émetteur, le destinataire, le sens (facture reçue d'un fournisseur ou émise vers un client), le numéro, les dates, les montants HT, TVA et TTC, et les lignes de détail.
 3. **Vérifie** la cohérence des montants, les doublons, les montants inhabituels pour un fournisseur et les échéances dépassées.
 4. **Explique** son verdict en langage clair : ✅ OK, ⚠️ anomalie ou ❓ à revoir.
 5. **Attend votre validation** avant d'enregistrer quoi que ce soit.
-6. **Prépare un brouillon de relance** pour les factures en retard. Rien n'est jamais envoyé automatiquement.
+6. **Prépare un brouillon de relance** pour les clients en retard de paiement, et signale les factures fournisseurs à régler. Rien n'est jamais envoyé automatiquement.
 
 ## Résultats mesurés
 
@@ -2803,7 +2943,7 @@ Voir `evals/results/`. Pour reproduire : `uv run python -m evals.run --model cla
 
 ```bash
 git clone <url-du-dépôt> && cd agent-factures
-cp .env.example .env        # puis renseigner ANTHROPIC_API_KEY
+cp .env.example .env        # puis renseigner ANTHROPIC_API_KEY (et COMPANY_NAME, le nom de votre entreprise)
 uv sync
 uv run streamlit run app/main.py
 ```
@@ -2846,7 +2986,7 @@ uv run pytest
 ## Limites connues et feuille de route
 
 - Pas encore de connexion à une boîte mail (Gmail ou IMAP).
-- Pas de suivi des paiements : le tableau de bord affiche le total des factures enregistrées.
+- Pas de suivi des paiements : les totaux « à payer » et « à encaisser » portent sur toutes les factures enregistrées.
 - Mono-utilisateur, sans authentification.
 - Prochaines étapes : tri automatique des emails entrants, relances clients, option de modèle local pour les données sensibles.
 ````
