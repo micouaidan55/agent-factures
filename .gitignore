@@ -6,3 +6,5 @@ __pycache__/
 .pytest_cache/
 .superpowers/
 data/
+.DS_Store
+inbox/traites/

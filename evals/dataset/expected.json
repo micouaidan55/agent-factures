@@ -16,7 +16,27 @@
         "due_date": "2026-10-02",
         "amount_excl_tax": "186.50",
         "vat_amount": "37.30",
-        "amount_incl_tax": "223.80"
+        "amount_incl_tax": "223.80",
+        "lines": [
+          {
+            "description": "Ramettes papier A4",
+            "quantity": 20,
+            "unit_price": "4.50",
+            "total": "90.00"
+          },
+          {
+            "description": "Stylos bille (boîte)",
+            "quantity": 5,
+            "unit_price": "12.90",
+            "total": "64.50"
+          },
+          {
+            "description": "Classeurs",
+            "quantity": 10,
+            "unit_price": "3.20",
+            "total": "32.00"
+          }
+        ]
       }
     },
     {
@@ -34,7 +54,21 @@
         "due_date": "2026-10-03",
         "amount_excl_tax": "223.00",
         "vat_amount": "44.60",
-        "amount_incl_tax": "267.60"
+        "amount_incl_tax": "267.60",
+        "lines": [
+          {
+            "description": "Flyers A5 x1000",
+            "quantity": 2,
+            "unit_price": "89.00",
+            "total": "178.00"
+          },
+          {
+            "description": "Cartes de visite x500",
+            "quantity": 1,
+            "unit_price": "45.00",
+            "total": "45.00"
+          }
+        ]
       }
     },
     {
@@ -52,7 +86,15 @@
         "due_date": "2026-10-04",
         "amount_excl_tax": "350.00",
         "vat_amount": "70.00",
-        "amount_incl_tax": "420.00"
+        "amount_incl_tax": "420.00",
+        "lines": [
+          {
+            "description": "Maintenance informatique septembre",
+            "quantity": 1,
+            "unit_price": "350.00",
+            "total": "350.00"
+          }
+        ]
       }
     },
     {
@@ -70,7 +112,21 @@
         "due_date": "2026-10-08",
         "amount_excl_tax": "185.00",
         "vat_amount": "37.00",
-        "amount_incl_tax": "222.00"
+        "amount_incl_tax": "222.00",
+        "lines": [
+          {
+            "description": "Cartouches d'encre",
+            "quantity": 4,
+            "unit_price": "38.00",
+            "total": "152.00"
+          },
+          {
+            "description": "Post-it (lot)",
+            "quantity": 6,
+            "unit_price": "5.50",
+            "total": "33.00"
+          }
+        ]
       }
     },
     {
@@ -90,7 +146,21 @@
         "due_date": "2026-09-10",
         "amount_excl_tax": "350.00",
         "vat_amount": "70.00",
-        "amount_incl_tax": "420.00"
+        "amount_incl_tax": "420.00",
+        "lines": [
+          {
+            "description": "Livraison Lyon - Grenoble",
+            "quantity": 1,
+            "unit_price": "280.00",
+            "total": "280.00"
+          },
+          {
+            "description": "Manutention",
+            "quantity": 2,
+            "unit_price": "35.00",
+            "total": "70.00"
+          }
+        ]
       }
     },
     {
@@ -108,7 +178,21 @@
         "due_date": "2026-10-12",
         "amount_excl_tax": "248.80",
         "vat_amount": "49.76",
-        "amount_incl_tax": "298.56"
+        "amount_incl_tax": "298.56",
+        "lines": [
+          {
+            "description": "Chaises de bureau",
+            "quantity": 1,
+            "unit_price": "189.00",
+            "total": "189.00"
+          },
+          {
+            "description": "Lampe LED",
+            "quantity": 2,
+            "unit_price": "29.90",
+            "total": "59.80"
+          }
+        ]
       }
     },
     {
@@ -126,7 +210,15 @@
         "due_date": "2026-10-14",
         "amount_excl_tax": "160.00",
         "vat_amount": "32.00",
-        "amount_incl_tax": "192.00"
+        "amount_incl_tax": "192.00",
+        "lines": [
+          {
+            "description": "Affiches A2 x50",
+            "quantity": 1,
+            "unit_price": "160.00",
+            "total": "160.00"
+          }
+        ]
       }
     },
     {
@@ -146,7 +238,15 @@
         "due_date": "2026-10-15",
         "amount_excl_tax": "240.00",
         "vat_amount": "60.00",
-        "amount_incl_tax": "288.00"
+        "amount_incl_tax": "288.00",
+        "lines": [
+          {
+            "description": "Licence antivirus (12 mois)",
+            "quantity": 10,
+            "unit_price": "24.00",
+            "total": "240.00"
+          }
+        ]
       }
     },
     {
@@ -166,7 +266,27 @@
         "due_date": "2026-10-02",
         "amount_excl_tax": "186.50",
         "vat_amount": "37.30",
-        "amount_incl_tax": "223.80"
+        "amount_incl_tax": "223.80",
+        "lines": [
+          {
+            "description": "Ramettes papier A4",
+            "quantity": 20,
+            "unit_price": "4.50",
+            "total": "90.00"
+          },
+          {
+            "description": "Stylos bille (boîte)",
+            "quantity": 5,
+            "unit_price": "12.90",
+            "total": "64.50"
+          },
+          {
+            "description": "Classeurs",
+            "quantity": 10,
+            "unit_price": "3.20",
+            "total": "32.00"
+          }
+        ]
       }
     },
     {
@@ -184,7 +304,15 @@
         "due_date": null,
         "amount_excl_tax": "740.00",
         "vat_amount": "148.00",
-        "amount_incl_tax": "888.00"
+        "amount_incl_tax": "888.00",
+        "lines": [
+          {
+            "description": "Brochures 16 pages x500",
+            "quantity": 1,
+            "unit_price": "740.00",
+            "total": "740.00"
+          }
+        ]
       }
     },
     {
@@ -202,7 +330,15 @@
         "due_date": "2026-10-01",
         "amount_excl_tax": "240.00",
         "vat_amount": "48.00",
-        "amount_incl_tax": "288.00"
+        "amount_incl_tax": "288.00",
+        "lines": [
+          {
+            "description": "Livraison Lyon - Annecy",
+            "quantity": 1,
+            "unit_price": "240.00",
+            "total": "240.00"
+          }
+        ]
       }
     },
     {
@@ -222,7 +358,15 @@
         "due_date": "2026-10-18",
         "amount_excl_tax": "3960.00",
         "vat_amount": "792.00",
-        "amount_incl_tax": "4752.00"
+        "amount_incl_tax": "4752.00",
+        "lines": [
+          {
+            "description": "Bureaux assis-debout",
+            "quantity": 8,
+            "unit_price": "495.00",
+            "total": "3960.00"
+          }
+        ]
       }
     },
     {
@@ -242,7 +386,21 @@
         "due_date": "2026-09-04",
         "amount_excl_tax": "1440.00",
         "vat_amount": "288.00",
-        "amount_incl_tax": "1728.00"
+        "amount_incl_tax": "1728.00",
+        "lines": [
+          {
+            "description": "Luminaires sur mesure",
+            "quantity": 3,
+            "unit_price": "420.00",
+            "total": "1260.00"
+          },
+          {
+            "description": "Pose",
+            "quantity": 1,
+            "unit_price": "180.00",
+            "total": "180.00"
+          }
+        ]
       }
     },
     {
@@ -269,7 +427,15 @@
         "due_date": "2026-10-20",
         "amount_excl_tax": "230.00",
         "vat_amount": "27.60",
-        "amount_incl_tax": "276.00"
+        "amount_incl_tax": "276.00",
+        "lines": [
+          {
+            "description": "Kakémono 80x200",
+            "quantity": 2,
+            "unit_price": "115.00",
+            "total": "230.00"
+          }
+        ]
       }
     },
     {
@@ -290,7 +456,21 @@
         "due_date": "2026-09-10",
         "amount_excl_tax": "350.00",
         "vat_amount": "70.00",
-        "amount_incl_tax": "420.00"
+        "amount_incl_tax": "420.00",
+        "lines": [
+          {
+            "description": "Livraison Lyon - Grenoble",
+            "quantity": 1,
+            "unit_price": "280.00",
+            "total": "280.00"
+          },
+          {
+            "description": "Manutention",
+            "quantity": 2,
+            "unit_price": "35.00",
+            "total": "70.00"
+          }
+        ]
       }
     },
     {
@@ -308,7 +488,21 @@
         "due_date": null,
         "amount_excl_tax": "2850.00",
         "vat_amount": "570.00",
-        "amount_incl_tax": "3420.00"
+        "amount_incl_tax": "3420.00",
+        "lines": [
+          {
+            "description": "Remplacement serveur",
+            "quantity": 1,
+            "unit_price": "2400.00",
+            "total": "2400.00"
+          },
+          {
+            "description": "Installation",
+            "quantity": 1,
+            "unit_price": "450.00",
+            "total": "450.00"
+          }
+        ]
       }
     },
     {
@@ -326,7 +520,15 @@
         "due_date": "2026-10-22",
         "amount_excl_tax": "38.00",
         "vat_amount": "7.60",
-        "amount_incl_tax": "45.60"
+        "amount_incl_tax": "45.60",
+        "lines": [
+          {
+            "description": "Enveloppes (x500)",
+            "quantity": 2,
+            "unit_price": "19.00",
+            "total": "38.00"
+          }
+        ]
       }
     },
     {
@@ -344,7 +546,15 @@
         "due_date": "2026-10-22",
         "amount_excl_tax": "580.00",
         "vat_amount": "116.00",
-        "amount_incl_tax": "696.00"
+        "amount_incl_tax": "696.00",
+        "lines": [
+          {
+            "description": "Suspensions design",
+            "quantity": 4,
+            "unit_price": "145.00",
+            "total": "580.00"
+          }
+        ]
       }
     },
     {
@@ -362,7 +572,785 @@
         "due_date": "2026-10-23",
         "amount_excl_tax": "132.00",
         "vat_amount": "26.40",
-        "amount_incl_tax": "158.40"
+        "amount_incl_tax": "158.40",
+        "lines": [
+          {
+            "description": "Étiquettes adhésives x2000",
+            "quantity": 1,
+            "unit_price": "132.00",
+            "total": "132.00"
+          }
+        ]
+      }
+    },
+    {
+      "file": "21_epicerie_multi_tva.pdf",
+      "expected_status": "ok",
+      "expected_issues": [],
+      "accept": true,
+      "invoice": {
+        "doc_type": "facture",
+        "direction": "recue",
+        "supplier": "Épicerie Fine du Rhône",
+        "customer": "Atelier Lumière SAS",
+        "number": "EFR-2026-0412",
+        "issue_date": "2026-09-05",
+        "due_date": "2026-10-05",
+        "amount_excl_tax": "454.90",
+        "vat_amount": "49.16",
+        "amount_incl_tax": "504.06",
+        "lines": [
+          {
+            "description": "Plateaux repas",
+            "quantity": 25,
+            "unit_price": "14.50",
+            "total": "362.50"
+          },
+          {
+            "description": "Jus de fruits (bouteille 1 L)",
+            "quantity": 12,
+            "unit_price": "3.20",
+            "total": "38.40"
+          },
+          {
+            "description": "Vaisselle jetable (lot)",
+            "quantity": 3,
+            "unit_price": "18.00",
+            "total": "54.00"
+          }
+        ]
+      }
+    },
+    {
+      "file": "22_electricite_sans_echeance.pdf",
+      "expected_status": "ok",
+      "expected_issues": [],
+      "accept": true,
+      "invoice": {
+        "doc_type": "facture",
+        "direction": "recue",
+        "supplier": "Électricité Lyon Pro",
+        "customer": "Atelier Lumière SAS",
+        "number": "EL-5487",
+        "issue_date": "2026-09-09",
+        "due_date": null,
+        "amount_excl_tax": "700.00",
+        "vat_amount": "140.00",
+        "amount_incl_tax": "840.00",
+        "lines": [
+          {
+            "description": "Installation de spots LED",
+            "quantity": 12,
+            "unit_price": "45.00",
+            "total": "540.00"
+          },
+          {
+            "description": "Fourniture câblage",
+            "quantity": 1,
+            "unit_price": "160.00",
+            "total": "160.00"
+          }
+        ]
+      }
+    },
+    {
+      "file": "23_technet_multipage.pdf",
+      "expected_status": "ok",
+      "expected_issues": [],
+      "accept": true,
+      "invoice": {
+        "doc_type": "facture",
+        "direction": "recue",
+        "supplier": "TechNet Services",
+        "customer": "Atelier Lumière SAS",
+        "number": "TN-941",
+        "issue_date": "2026-09-10",
+        "due_date": "2026-10-10",
+        "amount_excl_tax": "2125.80",
+        "vat_amount": "425.16",
+        "amount_incl_tax": "2550.96",
+        "lines": [
+          {
+            "description": "Câble RJ45 Cat6 — lot 1",
+            "quantity": 1,
+            "unit_price": "4.90",
+            "total": "4.90"
+          },
+          {
+            "description": "Câble RJ45 Cat6 — lot 2",
+            "quantity": 2,
+            "unit_price": "4.90",
+            "total": "9.80"
+          },
+          {
+            "description": "Câble RJ45 Cat6 — lot 3",
+            "quantity": 3,
+            "unit_price": "4.90",
+            "total": "14.70"
+          },
+          {
+            "description": "Adaptateur USB-C — lot 1",
+            "quantity": 1,
+            "unit_price": "12.00",
+            "total": "12.00"
+          },
+          {
+            "description": "Adaptateur USB-C — lot 2",
+            "quantity": 2,
+            "unit_price": "12.00",
+            "total": "24.00"
+          },
+          {
+            "description": "Adaptateur USB-C — lot 3",
+            "quantity": 3,
+            "unit_price": "12.00",
+            "total": "36.00"
+          },
+          {
+            "description": "Clavier sans fil — lot 1",
+            "quantity": 1,
+            "unit_price": "29.00",
+            "total": "29.00"
+          },
+          {
+            "description": "Clavier sans fil — lot 2",
+            "quantity": 2,
+            "unit_price": "29.00",
+            "total": "58.00"
+          },
+          {
+            "description": "Clavier sans fil — lot 3",
+            "quantity": 3,
+            "unit_price": "29.00",
+            "total": "87.00"
+          },
+          {
+            "description": "Souris optique — lot 1",
+            "quantity": 1,
+            "unit_price": "14.50",
+            "total": "14.50"
+          },
+          {
+            "description": "Souris optique — lot 2",
+            "quantity": 2,
+            "unit_price": "14.50",
+            "total": "29.00"
+          },
+          {
+            "description": "Souris optique — lot 3",
+            "quantity": 3,
+            "unit_price": "14.50",
+            "total": "43.50"
+          },
+          {
+            "description": "Hub USB 4 ports — lot 1",
+            "quantity": 1,
+            "unit_price": "19.90",
+            "total": "19.90"
+          },
+          {
+            "description": "Hub USB 4 ports — lot 2",
+            "quantity": 2,
+            "unit_price": "19.90",
+            "total": "39.80"
+          },
+          {
+            "description": "Hub USB 4 ports — lot 3",
+            "quantity": 3,
+            "unit_price": "19.90",
+            "total": "59.70"
+          },
+          {
+            "description": "Barrette RAM 16 Go — lot 1",
+            "quantity": 1,
+            "unit_price": "42.00",
+            "total": "42.00"
+          },
+          {
+            "description": "Barrette RAM 16 Go — lot 2",
+            "quantity": 2,
+            "unit_price": "42.00",
+            "total": "84.00"
+          },
+          {
+            "description": "Barrette RAM 16 Go — lot 3",
+            "quantity": 3,
+            "unit_price": "42.00",
+            "total": "126.00"
+          },
+          {
+            "description": "SSD 1 To — lot 1",
+            "quantity": 1,
+            "unit_price": "79.00",
+            "total": "79.00"
+          },
+          {
+            "description": "SSD 1 To — lot 2",
+            "quantity": 2,
+            "unit_price": "79.00",
+            "total": "158.00"
+          },
+          {
+            "description": "SSD 1 To — lot 3",
+            "quantity": 3,
+            "unit_price": "79.00",
+            "total": "237.00"
+          },
+          {
+            "description": "Support d'écran — lot 1",
+            "quantity": 1,
+            "unit_price": "34.00",
+            "total": "34.00"
+          },
+          {
+            "description": "Support d'écran — lot 2",
+            "quantity": 2,
+            "unit_price": "34.00",
+            "total": "68.00"
+          },
+          {
+            "description": "Support d'écran — lot 3",
+            "quantity": 3,
+            "unit_price": "34.00",
+            "total": "102.00"
+          },
+          {
+            "description": "Casque audio — lot 1",
+            "quantity": 1,
+            "unit_price": "49.00",
+            "total": "49.00"
+          },
+          {
+            "description": "Casque audio — lot 2",
+            "quantity": 2,
+            "unit_price": "49.00",
+            "total": "98.00"
+          },
+          {
+            "description": "Casque audio — lot 3",
+            "quantity": 3,
+            "unit_price": "49.00",
+            "total": "147.00"
+          },
+          {
+            "description": "Webcam HD — lot 1",
+            "quantity": 1,
+            "unit_price": "39.00",
+            "total": "39.00"
+          },
+          {
+            "description": "Webcam HD — lot 2",
+            "quantity": 2,
+            "unit_price": "39.00",
+            "total": "78.00"
+          },
+          {
+            "description": "Webcam HD — lot 3",
+            "quantity": 3,
+            "unit_price": "39.00",
+            "total": "117.00"
+          },
+          {
+            "description": "Multiprise parafoudre — lot 1",
+            "quantity": 1,
+            "unit_price": "24.50",
+            "total": "24.50"
+          },
+          {
+            "description": "Multiprise parafoudre — lot 2",
+            "quantity": 2,
+            "unit_price": "24.50",
+            "total": "49.00"
+          },
+          {
+            "description": "Multiprise parafoudre — lot 3",
+            "quantity": 3,
+            "unit_price": "24.50",
+            "total": "73.50"
+          },
+          {
+            "description": "Tapis de souris — lot 1",
+            "quantity": 1,
+            "unit_price": "6.50",
+            "total": "6.50"
+          },
+          {
+            "description": "Tapis de souris — lot 2",
+            "quantity": 2,
+            "unit_price": "6.50",
+            "total": "13.00"
+          },
+          {
+            "description": "Tapis de souris — lot 3",
+            "quantity": 3,
+            "unit_price": "6.50",
+            "total": "19.50"
+          }
+        ]
+      }
+    },
+    {
+      "file": "24_bureau_plus_doublon_format.pdf",
+      "expected_status": "anomalie",
+      "expected_issues": [
+        "DOUBLON"
+      ],
+      "accept": false,
+      "invoice": {
+        "doc_type": "facture",
+        "direction": "recue",
+        "supplier": "Bureau Plus SARL",
+        "customer": "Atelier Lumière SAS",
+        "number": "F2026-118",
+        "issue_date": "2026-09-08",
+        "due_date": "2026-10-08",
+        "amount_excl_tax": "185.00",
+        "vat_amount": "37.00",
+        "amount_incl_tax": "222.00",
+        "lines": [
+          {
+            "description": "Cartouches d'encre",
+            "quantity": 4,
+            "unit_price": "38.00",
+            "total": "152.00"
+          },
+          {
+            "description": "Post-it (lot)",
+            "quantity": 6,
+            "unit_price": "5.50",
+            "total": "33.00"
+          }
+        ]
+      }
+    },
+    {
+      "file": "25_nordic_lamps_en.pdf",
+      "expected_status": "ok",
+      "expected_issues": [],
+      "accept": true,
+      "invoice": {
+        "doc_type": "facture",
+        "direction": "recue",
+        "supplier": "Nordic Lamps Ltd",
+        "customer": "Atelier Lumière SAS",
+        "number": "INV-20931",
+        "issue_date": "2026-09-10",
+        "due_date": "2026-10-10",
+        "amount_excl_tax": "1024.00",
+        "vat_amount": "0.00",
+        "amount_incl_tax": "1024.00",
+        "lines": [
+          {
+            "description": "Pendant lamp NORD-40",
+            "quantity": 6,
+            "unit_price": "89.00",
+            "total": "534.00"
+          },
+          {
+            "description": "Floor lamp FJORD",
+            "quantity": 2,
+            "unit_price": "245.00",
+            "total": "490.00"
+          }
+        ]
+      }
+    },
+    {
+      "file": "26_martin_scan_degrade.png",
+      "expected_status": "ok",
+      "expected_issues": [],
+      "accept": true,
+      "invoice": {
+        "doc_type": "facture",
+        "direction": "recue",
+        "supplier": "Transports Martin",
+        "customer": "Atelier Lumière SAS",
+        "number": "TM/26/052",
+        "issue_date": "2026-09-12",
+        "due_date": "2026-10-12",
+        "amount_excl_tax": "300.00",
+        "vat_amount": "60.00",
+        "amount_incl_tax": "360.00",
+        "lines": [
+          {
+            "description": "Livraison Lyon - Chambéry",
+            "quantity": 1,
+            "unit_price": "260.00",
+            "total": "260.00"
+          },
+          {
+            "description": "Hayon élévateur",
+            "quantity": 1,
+            "unit_price": "40.00",
+            "total": "40.00"
+          }
+        ]
+      }
+    },
+    {
+      "file": "27_emise_gourmet.pdf",
+      "expected_status": "ok",
+      "expected_issues": [],
+      "accept": true,
+      "invoice": {
+        "doc_type": "facture",
+        "direction": "emise",
+        "supplier": "Atelier Lumière SAS",
+        "customer": "Restaurant Le Gourmet",
+        "number": "AL-2026-078",
+        "issue_date": "2026-09-15",
+        "due_date": "2026-10-15",
+        "amount_excl_tax": "970.00",
+        "vat_amount": "194.00",
+        "amount_incl_tax": "1164.00",
+        "lines": [
+          {
+            "description": "Appliques murales laiton",
+            "quantity": 6,
+            "unit_price": "125.00",
+            "total": "750.00"
+          },
+          {
+            "description": "Pose",
+            "quantity": 1,
+            "unit_price": "220.00",
+            "total": "220.00"
+          }
+        ]
+      }
+    },
+    {
+      "file": "28_emise_galerie_retard.pdf",
+      "expected_status": "anomalie",
+      "expected_issues": [
+        "ECHEANCE_DEPASSEE"
+      ],
+      "accept": true,
+      "invoice": {
+        "doc_type": "facture",
+        "direction": "emise",
+        "supplier": "Atelier Lumière SAS",
+        "customer": "Galerie Nova",
+        "number": "AL-2026-049",
+        "issue_date": "2026-07-20",
+        "due_date": "2026-08-19",
+        "amount_excl_tax": "1850.00",
+        "vat_amount": "370.00",
+        "amount_incl_tax": "2220.00",
+        "lines": [
+          {
+            "description": "Éclairage sur rail (installation)",
+            "quantity": 1,
+            "unit_price": "1850.00",
+            "total": "1850.00"
+          }
+        ]
+      }
+    },
+    {
+      "file": "29_dupont.pdf",
+      "expected_status": "ok",
+      "expected_issues": [],
+      "accept": true,
+      "invoice": {
+        "doc_type": "facture",
+        "direction": "recue",
+        "supplier": "Imprimerie Dupont",
+        "customer": "Atelier Lumière SAS",
+        "number": "4755",
+        "issue_date": "2026-09-16",
+        "due_date": "2026-10-16",
+        "amount_excl_tax": "54.00",
+        "vat_amount": "10.80",
+        "amount_incl_tax": "64.80",
+        "lines": [
+          {
+            "description": "Tampons encreurs",
+            "quantity": 3,
+            "unit_price": "18.00",
+            "total": "54.00"
+          }
+        ]
+      }
+    },
+    {
+      "file": "30_dupont_inhabituel.pdf",
+      "expected_status": "anomalie",
+      "expected_issues": [
+        "MONTANT_INHABITUEL"
+      ],
+      "accept": true,
+      "invoice": {
+        "doc_type": "facture",
+        "direction": "recue",
+        "supplier": "Imprimerie Dupont",
+        "customer": "Atelier Lumière SAS",
+        "number": "4790",
+        "issue_date": "2026-09-17",
+        "due_date": "2026-10-17",
+        "amount_excl_tax": "2000.00",
+        "vat_amount": "400.00",
+        "amount_incl_tax": "2400.00",
+        "lines": [
+          {
+            "description": "Signalétique complète showroom",
+            "quantity": 1,
+            "unit_price": "2000.00",
+            "total": "2000.00"
+          }
+        ]
+      }
+    },
+    {
+      "file": "31_epicerie_lignes.pdf",
+      "expected_status": "anomalie",
+      "expected_issues": [
+        "LIGNES_INCOHERENTES"
+      ],
+      "accept": false,
+      "invoice": {
+        "doc_type": "facture",
+        "direction": "recue",
+        "supplier": "Épicerie Fine du Rhône",
+        "customer": "Atelier Lumière SAS",
+        "number": "EFR-2026-0431",
+        "issue_date": "2026-09-18",
+        "due_date": "2026-10-18",
+        "amount_excl_tax": "389.00",
+        "vat_amount": "38.90",
+        "amount_incl_tax": "427.90",
+        "lines": [
+          {
+            "description": "Plateaux repas",
+            "quantity": 20,
+            "unit_price": "14.50",
+            "total": "290.00"
+          },
+          {
+            "description": "Desserts",
+            "quantity": 20,
+            "unit_price": "4.20",
+            "total": "84.00"
+          }
+        ]
+      }
+    },
+    {
+      "file": "32_bureau_plus_avoir.pdf",
+      "expected_status": "a_revoir",
+      "expected_issues": [],
+      "accept": false,
+      "invoice": null
+    },
+    {
+      "file": "33_martin_bon_livraison.pdf",
+      "expected_status": "a_revoir",
+      "expected_issues": [],
+      "accept": false,
+      "invoice": null
+    },
+    {
+      "file": "34_electricite_devis.pdf",
+      "expected_status": "ok",
+      "expected_issues": [],
+      "accept": true,
+      "invoice": {
+        "doc_type": "devis",
+        "direction": "recue",
+        "supplier": "Électricité Lyon Pro",
+        "customer": "Atelier Lumière SAS",
+        "number": "DEV-2026-12",
+        "issue_date": "2026-09-19",
+        "due_date": null,
+        "amount_excl_tax": "3710.00",
+        "vat_amount": "742.00",
+        "amount_incl_tax": "4452.00",
+        "lines": [
+          {
+            "description": "Mise aux normes du showroom",
+            "quantity": 1,
+            "unit_price": "3200.00",
+            "total": "3200.00"
+          },
+          {
+            "description": "Éclairage de secours",
+            "quantity": 6,
+            "unit_price": "85.00",
+            "total": "510.00"
+          }
+        ]
+      }
+    },
+    {
+      "file": "35_technet_retard.pdf",
+      "expected_status": "anomalie",
+      "expected_issues": [
+        "ECHEANCE_DEPASSEE"
+      ],
+      "accept": true,
+      "invoice": {
+        "doc_type": "facture",
+        "direction": "recue",
+        "supplier": "TechNet Services",
+        "customer": "Atelier Lumière SAS",
+        "number": "TN-950",
+        "issue_date": "2026-08-10",
+        "due_date": "2026-09-09",
+        "amount_excl_tax": "350.00",
+        "vat_amount": "70.00",
+        "amount_incl_tax": "420.00",
+        "lines": [
+          {
+            "description": "Maintenance informatique août",
+            "quantity": 1,
+            "unit_price": "350.00",
+            "total": "350.00"
+          }
+        ]
+      }
+    },
+    {
+      "file": "36_emise_bellevue.pdf",
+      "expected_status": "ok",
+      "expected_issues": [],
+      "accept": true,
+      "invoice": {
+        "doc_type": "facture",
+        "direction": "emise",
+        "supplier": "Atelier Lumière SAS",
+        "customer": "Hôtel Bellevue",
+        "number": "AL-2026-083",
+        "issue_date": "2026-09-19",
+        "due_date": "2026-10-19",
+        "amount_excl_tax": "1300.00",
+        "vat_amount": "260.00",
+        "amount_incl_tax": "1560.00",
+        "lines": [
+          {
+            "description": "Lampes de chevet",
+            "quantity": 20,
+            "unit_price": "65.00",
+            "total": "1300.00"
+          }
+        ]
+      }
+    },
+    {
+      "file": "37_nordic_lamps_en.pdf",
+      "expected_status": "ok",
+      "expected_issues": [],
+      "accept": true,
+      "invoice": {
+        "doc_type": "facture",
+        "direction": "recue",
+        "supplier": "Nordic Lamps Ltd",
+        "customer": "Atelier Lumière SAS",
+        "number": "INV-20977",
+        "issue_date": "2026-09-21",
+        "due_date": "2026-10-21",
+        "amount_excl_tax": "390.00",
+        "vat_amount": "0.00",
+        "amount_incl_tax": "390.00",
+        "lines": [
+          {
+            "description": "Wall light LUMA",
+            "quantity": 10,
+            "unit_price": "39.00",
+            "total": "390.00"
+          }
+        ]
+      }
+    },
+    {
+      "file": "38_dupont_scan.png",
+      "expected_status": "ok",
+      "expected_issues": [],
+      "accept": true,
+      "invoice": {
+        "doc_type": "facture",
+        "direction": "recue",
+        "supplier": "Imprimerie Dupont",
+        "customer": "Atelier Lumière SAS",
+        "number": "4801",
+        "issue_date": "2026-09-21",
+        "due_date": "2026-10-21",
+        "amount_excl_tax": "95.00",
+        "vat_amount": "19.00",
+        "amount_incl_tax": "114.00",
+        "lines": [
+          {
+            "description": "Cartes de vœux x200",
+            "quantity": 1,
+            "unit_price": "95.00",
+            "total": "95.00"
+          }
+        ]
+      }
+    },
+    {
+      "file": "39_bureau_plus.pdf",
+      "expected_status": "ok",
+      "expected_issues": [],
+      "accept": true,
+      "invoice": {
+        "doc_type": "facture",
+        "direction": "recue",
+        "supplier": "Bureau Plus SARL",
+        "customer": "Atelier Lumière SAS",
+        "number": "F-2026-175",
+        "issue_date": "2026-09-22",
+        "due_date": "2026-10-22",
+        "amount_excl_tax": "120.50",
+        "vat_amount": "24.10",
+        "amount_incl_tax": "144.60",
+        "lines": [
+          {
+            "description": "Agrafeuses",
+            "quantity": 5,
+            "unit_price": "12.50",
+            "total": "62.50"
+          },
+          {
+            "description": "Boîtes d'archives",
+            "quantity": 20,
+            "unit_price": "2.90",
+            "total": "58.00"
+          }
+        ]
+      }
+    },
+    {
+      "file": "40_electricite_tva.pdf",
+      "expected_status": "anomalie",
+      "expected_issues": [
+        "TOTAL_INCOHERENT"
+      ],
+      "accept": false,
+      "invoice": {
+        "doc_type": "facture",
+        "direction": "recue",
+        "supplier": "Électricité Lyon Pro",
+        "customer": "Atelier Lumière SAS",
+        "number": "EL-5520",
+        "issue_date": "2026-09-23",
+        "due_date": "2026-10-23",
+        "amount_excl_tax": "1000.00",
+        "vat_amount": "220.00",
+        "amount_incl_tax": "1200.00",
+        "lines": [
+          {
+            "description": "Remplacement tableau électrique",
+            "quantity": 1,
+            "unit_price": "780.00",
+            "total": "780.00"
+          },
+          {
+            "description": "Main d'œuvre (heure)",
+            "quantity": 4,
+            "unit_price": "55.00",
+            "total": "220.00"
+          }
+        ]
       }
     }
   ]
