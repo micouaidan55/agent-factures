@@ -13,7 +13,8 @@ CREATE TABLE IF NOT EXISTS invoices (
     amount_incl_tax TEXT NOT NULL,
     data TEXT NOT NULL,
     source_file TEXT NOT NULL,
-    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    paid_at TEXT
 );
 CREATE INDEX IF NOT EXISTS idx_invoices_supplier ON invoices (supplier_key, number);
 CREATE TABLE IF NOT EXISTS action_log (
@@ -30,8 +31,17 @@ def connect(path: str = ":memory:") -> sqlite3.Connection:
     conn = sqlite3.connect(path, check_same_thread=False)
     conn.row_factory = sqlite3.Row
     conn.executescript(SCHEMA)
+    _add_paid_column(conn)
     _normalize_stored_numbers(conn)
     return conn
+
+
+def _add_paid_column(conn: sqlite3.Connection) -> None:
+    """Ajoute la date de paiement aux bases créées avant son introduction (idempotent)."""
+    columns = {row["name"] for row in conn.execute("PRAGMA table_info(invoices)")}
+    if "paid_at" not in columns:
+        conn.execute("ALTER TABLE invoices ADD COLUMN paid_at TEXT")
+        conn.commit()
 
 
 def _normalize_stored_numbers(conn: sqlite3.Connection) -> None:

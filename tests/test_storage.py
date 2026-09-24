@@ -99,3 +99,43 @@ def test_connect_normalizes_numbers_stored_by_older_versions(tmp_path):
     conn.close()
     repo = InvoiceRepository(connect(db_path))
     assert len(repo.find_by_supplier_and_number("Bureau Plus SARL", "F2026118")) == 1
+
+
+def test_mark_paid_records_the_payment_date():
+    repo = make_repo()
+    invoice_id = repo.add(make_invoice(), "a.pdf")
+    assert repo.get(invoice_id).paid_at is None
+    repo.mark_paid(invoice_id, date(2026, 9, 24))
+    assert repo.get(invoice_id).paid_at == date(2026, 9, 24)
+
+
+def test_paid_invoices_leave_overdue_and_unpaid_lists():
+    repo = make_repo()
+    paid = repo.add(make_invoice(number="paid", due_date=date(2026, 9, 1)), "a.pdf")
+    repo.add(make_invoice(number="late", due_date=date(2026, 9, 2)), "b.pdf")
+    repo.add(make_invoice(number="later", due_date=None), "c.pdf")
+    repo.add(make_invoice(number="quote", doc_type="devis"), "d.pdf")
+    repo.add(make_invoice(number="issued", direction="emise"), "e.pdf")
+    repo.mark_paid(paid, date(2026, 9, 20))
+    today = date(2026, 9, 24)
+    assert [s.invoice.number for s in repo.list_overdue(today)] == ["late"]
+    assert [s.invoice.number for s in repo.list_unpaid(direction="recue")] == ["late", "later"]
+    assert [s.invoice.number for s in repo.list_unpaid(direction="emise")] == ["issued"]
+
+
+def test_connect_adds_the_paid_column_to_older_databases(tmp_path):
+    import sqlite3
+
+    db_path = str(tmp_path / "old.db")
+    old = sqlite3.connect(db_path)
+    old.executescript(
+        "CREATE TABLE invoices (id INTEGER PRIMARY KEY AUTOINCREMENT, supplier_key TEXT NOT NULL,"
+        " number TEXT NOT NULL, doc_type TEXT NOT NULL, direction TEXT NOT NULL, due_date TEXT,"
+        " amount_incl_tax TEXT NOT NULL, data TEXT NOT NULL, source_file TEXT NOT NULL,"
+        " created_at TEXT NOT NULL DEFAULT (datetime('now')));"
+    )
+    old.close()
+    repo = InvoiceRepository(connect(db_path))
+    invoice_id = repo.add(make_invoice(), "a.pdf")
+    repo.mark_paid(invoice_id, date(2026, 9, 24))
+    assert repo.get(invoice_id).paid_at == date(2026, 9, 24)
