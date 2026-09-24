@@ -6,7 +6,7 @@ from datetime import date
 from pydantic import BaseModel
 
 from agent_factures.extraction.models import Direction, DocumentType, Invoice
-from agent_factures.storage.db import supplier_key
+from agent_factures.storage.db import number_key, supplier_key
 
 
 class StoredInvoice(BaseModel):
@@ -25,7 +25,7 @@ class InvoiceRepository:
             " VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
             (
                 supplier_key(invoice.supplier),
-                invoice.number.strip(),
+                number_key(invoice.number),
                 invoice.doc_type.value,
                 invoice.direction.value,
                 invoice.due_date.isoformat() if invoice.due_date else None,
@@ -42,7 +42,7 @@ class InvoiceRepository:
         return rows[0] if rows else None
 
     def find_by_supplier_and_number(self, supplier: str, number: str) -> list[StoredInvoice]:
-        return self._select("WHERE supplier_key = ? AND number = ?", (supplier_key(supplier), number.strip()))
+        return self._select("WHERE supplier_key = ? AND number = ?", (supplier_key(supplier), number_key(number)))
 
     def list_by_supplier(self, supplier: str) -> list[StoredInvoice]:
         return self._select("WHERE supplier_key = ?", (supplier_key(supplier),))

@@ -1,7 +1,7 @@
 from datetime import date
 
 from agent_factures.storage.action_log import ActionLog
-from agent_factures.storage.db import connect, supplier_key
+from agent_factures.storage.db import connect, number_key, supplier_key
 from agent_factures.storage.repository import InvoiceRepository
 from tests.factories import make_invoice
 
@@ -31,6 +31,17 @@ def test_find_by_supplier_and_number_ignores_supplier_case():
     repo.add(make_invoice(supplier="Bureau Plus SARL", number="F-002"), "b.pdf")
     found = repo.find_by_supplier_and_number("bureau plus sarl", "F-001")
     assert [s.source_file for s in found] == ["a.pdf"]
+
+
+def test_number_key_ignores_case_and_separators():
+    assert number_key(" F-2026/118 ") == number_key("f2026.118") == "f2026118"
+
+
+def test_find_by_supplier_and_number_ignores_number_formatting():
+    repo = make_repo()
+    repo.add(make_invoice(number="F-2026-118"), "a.pdf")
+    assert [s.source_file for s in repo.find_by_supplier_and_number("Bureau Plus SARL", "F2026 118")] == ["a.pdf"]
+    assert repo.find_by_supplier_and_number("Bureau Plus SARL", "F-2026-119") == []
 
 
 def test_list_by_supplier():
@@ -77,3 +88,14 @@ def test_action_log_records_and_lists():
     assert [e.action for e in entries] == ["analyse", "accepte"]
     assert entries[0].detail == {"statut": "ok", "cout_usd": 0.01}
     assert [e.document for e in log.list_recent(limit=2)] == ["f1.pdf", "f2.pdf"]
+
+
+def test_connect_normalizes_numbers_stored_by_older_versions(tmp_path):
+    db_path = str(tmp_path / "old.db")
+    conn = connect(db_path)
+    InvoiceRepository(conn).add(make_invoice(number="F-2026-118"), "a.pdf")
+    conn.execute("UPDATE invoices SET number = 'F-2026-118'")  # format des versions précédentes
+    conn.commit()
+    conn.close()
+    repo = InvoiceRepository(connect(db_path))
+    assert len(repo.find_by_supplier_and_number("Bureau Plus SARL", "F2026118")) == 1

@@ -30,8 +30,21 @@ def connect(path: str = ":memory:") -> sqlite3.Connection:
     conn = sqlite3.connect(path, check_same_thread=False)
     conn.row_factory = sqlite3.Row
     conn.executescript(SCHEMA)
+    _normalize_stored_numbers(conn)
     return conn
+
+
+def _normalize_stored_numbers(conn: sqlite3.Connection) -> None:
+    """Migre les numéros enregistrés avant la normalisation (idempotent)."""
+    conn.create_function("number_key", 1, number_key, deterministic=True)
+    conn.execute("UPDATE invoices SET number = number_key(number) WHERE number != number_key(number)")
+    conn.commit()
 
 
 def supplier_key(name: str) -> str:
     return " ".join(name.casefold().split())
+
+
+def number_key(number: str) -> str:
+    """Numéro de pièce normalisé : « F-2026/118 » et « f2026 118 » désignent la même pièce."""
+    return "".join(char for char in number.casefold() if char.isalnum())
