@@ -35,7 +35,7 @@ Détail par document : `evals/results/claude-sonnet-5.json`. Pour reproduire (en
 ## Démarrage rapide
 
 ```bash
-git clone <url-du-dépôt> && cd agent-factures
+git clone https://github.com/micouaidan55/agent-factures.git && cd agent-factures
 cp .env.example .env        # puis renseigner ANTHROPIC_API_KEY (et COMPANY_NAME, le nom de votre entreprise)
 uv sync
 uv run streamlit run app/main.py
