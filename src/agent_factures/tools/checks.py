@@ -4,6 +4,7 @@ from datetime import date
 from decimal import Decimal
 
 from agent_factures.extraction.models import Direction, DocumentType, Invoice, Issue
+from agent_factures.tools.formatting import euros
 
 TOLERANCE = Decimal("0.02")
 
@@ -15,7 +16,7 @@ def check_amounts(invoice: Invoice) -> list[Issue]:
         issues.append(
             Issue(
                 code="TOTAL_INCOHERENT",
-                message=f"HT + TVA = {computed} mais le TTC indiqué est {invoice.amount_incl_tax}.",
+                message=f"HT + TVA = {euros(computed)} mais le TTC indiqué est {euros(invoice.amount_incl_tax)}.",
             )
         )
     if invoice.lines:
@@ -24,7 +25,10 @@ def check_amounts(invoice: Invoice) -> list[Issue]:
             issues.append(
                 Issue(
                     code="LIGNES_INCOHERENTES",
-                    message=f"La somme des lignes ({lines_total}) ne correspond pas au HT ({invoice.amount_excl_tax}).",
+                    message=(
+                        f"La somme des lignes ({euros(lines_total)}) ne correspond pas au HT "
+                        f"({euros(invoice.amount_excl_tax)})."
+                    ),
                 )
             )
     return issues

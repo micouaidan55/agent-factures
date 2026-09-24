@@ -21,6 +21,11 @@ def test_total_mismatch_is_flagged():
     assert "125" in issues[0].message and "120" in issues[0].message
 
 
+def test_total_mismatch_message_uses_euro_formatting():
+    issues = check_amounts(make_invoice(vat_amount=Decimal("25.00")))
+    assert "125,00 €" in issues[0].message
+
+
 def test_lines_mismatch_is_flagged():
     invoice = make_invoice(
         amount_excl_tax=Decimal("150.00"), vat_amount=Decimal("30.00"), amount_incl_tax=Decimal("180.00")

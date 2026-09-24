@@ -6,6 +6,7 @@ from pydantic import BaseModel
 
 from agent_factures.extraction.models import Direction, DocumentType, Invoice, Issue
 from agent_factures.storage.repository import InvoiceRepository, StoredInvoice
+from agent_factures.tools.formatting import euros
 
 MIN_HISTORY = 3
 UNUSUAL_FACTOR = Decimal("3")
@@ -42,7 +43,7 @@ def check_unusual_amount(invoice: Invoice, stats: SupplierStats) -> Issue | None
     return Issue(
         code="MONTANT_INHABITUEL",
         message=(
-            f"Montant de {invoice.amount_incl_tax} € TTC, plus de 3 fois la moyenne "
-            f"({stats.average_incl_tax:.2f} €) des {stats.count} factures précédentes de ce fournisseur."
+            f"Montant de {euros(invoice.amount_incl_tax)} TTC, plus de 3 fois la moyenne "
+            f"({euros(stats.average_incl_tax)}) des {stats.count} factures précédentes de ce fournisseur."
         ),
     )

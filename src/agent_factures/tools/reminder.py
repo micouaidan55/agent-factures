@@ -1,13 +1,9 @@
 """Brouillon de relance d'un client pour une facture émise impayée. Rien n'est envoyé."""
 
 from datetime import date
-from decimal import Decimal
 
 from agent_factures.extraction.models import Direction, Invoice
-
-
-def _euros(amount: Decimal) -> str:
-    return f"{amount:,.2f} €".replace(",", " ").replace(".", ",")
+from agent_factures.tools.formatting import euros
 
 
 def draft_reminder(invoice: Invoice, today: date) -> str:
@@ -20,7 +16,7 @@ def draft_reminder(invoice: Invoice, today: date) -> str:
         f"Objet : facture n° {invoice.number} — échéance dépassée\n\n"
         f"Bonjour,\n\n"
         f"Sauf erreur de notre part, notre facture n° {invoice.number} d'un montant de "
-        f"{_euros(invoice.amount_incl_tax)} TTC est arrivée à échéance le {due:%d/%m/%Y}, "
+        f"{euros(invoice.amount_incl_tax)} TTC est arrivée à échéance le {due:%d/%m/%Y}, "
         f"soit un retard de {days_late} jours.\n\n"
         f"Pourriez-vous nous indiquer la date de règlement prévue ? Si le paiement a été effectué entre-temps, "
         f"merci de ne pas tenir compte de ce message.\n\n"
