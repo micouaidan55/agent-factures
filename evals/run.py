@@ -57,6 +57,8 @@ def main() -> None:
     parser.add_argument("--model", choices=MODELS, default=DEFAULT_MODEL)
     parser.add_argument("--dataset", type=Path, default=ROOT / "dataset")
     parser.add_argument("--out", type=Path, default=ROOT / "results")
+    parser.add_argument("--max-cost", type=float, default=None,
+                        help="Arrête l'évaluation dès que le coût cumulé (en $) atteint ce budget.")
     args = parser.parse_args()
 
     load_dotenv()
@@ -79,7 +81,10 @@ def main() -> None:
         result = agent.process(path)
         elapsed = time.perf_counter() - started
         issues = {issue.code for issue in result.issues}
-        print(f"{doc['file']:<35} {result.verdict.status.value:<9} {sorted(issues)} {elapsed:.1f}s")
+        if result.cost_usd is not None:
+            total_cost += result.cost_usd
+        print(f"{doc['file']:<35} {result.verdict.status.value:<9} {sorted(issues)} {elapsed:.1f}s"
+              f" — cumul {total_cost:.4f} $", flush=True)
         outcomes.append(
             DocOutcome(
                 file=doc["file"], expected=doc, status=result.verdict.status.value, issues=issues,
@@ -87,10 +92,11 @@ def main() -> None:
             )
         )
         details.append(doc_result_json(doc, result, elapsed))
-        if result.cost_usd is not None:
-            total_cost += result.cost_usd
         if doc["accept"]:
             repo.add(ground_truth_invoice(doc), source_file=doc["file"])
+        if args.max_cost is not None and total_cost >= args.max_cost:
+            print(f"Budget de {args.max_cost:.2f} $ atteint : arrêt après {len(outcomes)} documents.")
+            break
 
     report = to_markdown(args.model, summarize(outcomes))
     args.out.mkdir(parents=True, exist_ok=True)
