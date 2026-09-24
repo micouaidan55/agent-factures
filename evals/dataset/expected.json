@@ -1,0 +1,369 @@
+{
+  "today": "2026-09-24",
+  "documents": [
+    {
+      "file": "01_bureau_plus.pdf",
+      "expected_status": "ok",
+      "expected_issues": [],
+      "accept": true,
+      "invoice": {
+        "doc_type": "facture",
+        "direction": "recue",
+        "supplier": "Bureau Plus SARL",
+        "customer": "Atelier Lumière SAS",
+        "number": "F-2026-101",
+        "issue_date": "2026-09-02",
+        "due_date": "2026-10-02",
+        "amount_excl_tax": "186.50",
+        "vat_amount": "37.30",
+        "amount_incl_tax": "223.80"
+      }
+    },
+    {
+      "file": "02_dupont.pdf",
+      "expected_status": "ok",
+      "expected_issues": [],
+      "accept": true,
+      "invoice": {
+        "doc_type": "facture",
+        "direction": "recue",
+        "supplier": "Imprimerie Dupont",
+        "customer": "Atelier Lumière SAS",
+        "number": "4512",
+        "issue_date": "2026-09-03",
+        "due_date": "2026-10-03",
+        "amount_excl_tax": "223.00",
+        "vat_amount": "44.60",
+        "amount_incl_tax": "267.60"
+      }
+    },
+    {
+      "file": "03_technet.pdf",
+      "expected_status": "ok",
+      "expected_issues": [],
+      "accept": true,
+      "invoice": {
+        "doc_type": "facture",
+        "direction": "recue",
+        "supplier": "TechNet Services",
+        "customer": "Atelier Lumière SAS",
+        "number": "TN-889",
+        "issue_date": "2026-09-04",
+        "due_date": "2026-10-04",
+        "amount_excl_tax": "350.00",
+        "vat_amount": "70.00",
+        "amount_incl_tax": "420.00"
+      }
+    },
+    {
+      "file": "04_bureau_plus.pdf",
+      "expected_status": "ok",
+      "expected_issues": [],
+      "accept": true,
+      "invoice": {
+        "doc_type": "facture",
+        "direction": "recue",
+        "supplier": "Bureau Plus SARL",
+        "customer": "Atelier Lumière SAS",
+        "number": "F-2026-118",
+        "issue_date": "2026-09-08",
+        "due_date": "2026-10-08",
+        "amount_excl_tax": "185.00",
+        "vat_amount": "37.00",
+        "amount_incl_tax": "222.00"
+      }
+    },
+    {
+      "file": "05_martin.pdf",
+      "expected_status": "anomalie",
+      "expected_issues": [
+        "ECHEANCE_DEPASSEE"
+      ],
+      "accept": true,
+      "invoice": {
+        "doc_type": "facture",
+        "direction": "recue",
+        "supplier": "Transports Martin",
+        "customer": "Atelier Lumière SAS",
+        "number": "TM/26/033",
+        "issue_date": "2026-08-11",
+        "due_date": "2026-09-10",
+        "amount_excl_tax": "350.00",
+        "vat_amount": "70.00",
+        "amount_incl_tax": "420.00"
+      }
+    },
+    {
+      "file": "06_bureau_plus.pdf",
+      "expected_status": "ok",
+      "expected_issues": [],
+      "accept": true,
+      "invoice": {
+        "doc_type": "facture",
+        "direction": "recue",
+        "supplier": "Bureau Plus SARL",
+        "customer": "Atelier Lumière SAS",
+        "number": "F-2026-131",
+        "issue_date": "2026-09-12",
+        "due_date": "2026-10-12",
+        "amount_excl_tax": "248.80",
+        "vat_amount": "49.76",
+        "amount_incl_tax": "298.56"
+      }
+    },
+    {
+      "file": "07_dupont_scan.png",
+      "expected_status": "ok",
+      "expected_issues": [],
+      "accept": true,
+      "invoice": {
+        "doc_type": "facture",
+        "direction": "recue",
+        "supplier": "Imprimerie Dupont",
+        "customer": "Atelier Lumière SAS",
+        "number": "4580",
+        "issue_date": "2026-09-14",
+        "due_date": "2026-10-14",
+        "amount_excl_tax": "160.00",
+        "vat_amount": "32.00",
+        "amount_incl_tax": "192.00"
+      }
+    },
+    {
+      "file": "08_technet_tva.pdf",
+      "expected_status": "anomalie",
+      "expected_issues": [
+        "TOTAL_INCOHERENT"
+      ],
+      "accept": false,
+      "invoice": {
+        "doc_type": "facture",
+        "direction": "recue",
+        "supplier": "TechNet Services",
+        "customer": "Atelier Lumière SAS",
+        "number": "TN-902",
+        "issue_date": "2026-09-15",
+        "due_date": "2026-10-15",
+        "amount_excl_tax": "240.00",
+        "vat_amount": "60.00",
+        "amount_incl_tax": "288.00"
+      }
+    },
+    {
+      "file": "09_bureau_plus_doublon.pdf",
+      "expected_status": "anomalie",
+      "expected_issues": [
+        "DOUBLON"
+      ],
+      "accept": false,
+      "invoice": {
+        "doc_type": "facture",
+        "direction": "recue",
+        "supplier": "Bureau Plus SARL",
+        "customer": "Atelier Lumière SAS",
+        "number": "F-2026-101",
+        "issue_date": "2026-09-02",
+        "due_date": "2026-10-02",
+        "amount_excl_tax": "186.50",
+        "vat_amount": "37.30",
+        "amount_incl_tax": "223.80"
+      }
+    },
+    {
+      "file": "10_dupont_devis.pdf",
+      "expected_status": "ok",
+      "expected_issues": [],
+      "accept": true,
+      "invoice": {
+        "doc_type": "devis",
+        "direction": "recue",
+        "supplier": "Imprimerie Dupont",
+        "customer": "Atelier Lumière SAS",
+        "number": "D-2026-044",
+        "issue_date": "2026-09-16",
+        "due_date": null,
+        "amount_excl_tax": "740.00",
+        "vat_amount": "148.00",
+        "amount_incl_tax": "888.00"
+      }
+    },
+    {
+      "file": "11_martin.pdf",
+      "expected_status": "ok",
+      "expected_issues": [],
+      "accept": true,
+      "invoice": {
+        "doc_type": "facture",
+        "direction": "recue",
+        "supplier": "Transports Martin",
+        "customer": "Atelier Lumière SAS",
+        "number": "TM/26/041",
+        "issue_date": "2026-09-01",
+        "due_date": "2026-10-01",
+        "amount_excl_tax": "240.00",
+        "vat_amount": "48.00",
+        "amount_incl_tax": "288.00"
+      }
+    },
+    {
+      "file": "12_bureau_plus_inhabituel.pdf",
+      "expected_status": "anomalie",
+      "expected_issues": [
+        "MONTANT_INHABITUEL"
+      ],
+      "accept": true,
+      "invoice": {
+        "doc_type": "facture",
+        "direction": "recue",
+        "supplier": "Bureau Plus SARL",
+        "customer": "Atelier Lumière SAS",
+        "number": "F-2026-150",
+        "issue_date": "2026-09-18",
+        "due_date": "2026-10-18",
+        "amount_excl_tax": "3960.00",
+        "vat_amount": "792.00",
+        "amount_incl_tax": "4752.00"
+      }
+    },
+    {
+      "file": "13_emise_bellevue.pdf",
+      "expected_status": "anomalie",
+      "expected_issues": [
+        "ECHEANCE_DEPASSEE"
+      ],
+      "accept": true,
+      "invoice": {
+        "doc_type": "facture",
+        "direction": "emise",
+        "supplier": "Atelier Lumière SAS",
+        "customer": "Hôtel Bellevue",
+        "number": "AL-2026-057",
+        "issue_date": "2026-08-05",
+        "due_date": "2026-09-04",
+        "amount_excl_tax": "1440.00",
+        "vat_amount": "288.00",
+        "amount_incl_tax": "1728.00"
+      }
+    },
+    {
+      "file": "14_courrier.pdf",
+      "expected_status": "a_revoir",
+      "expected_issues": [],
+      "accept": false,
+      "invoice": null
+    },
+    {
+      "file": "15_dupont_tva.pdf",
+      "expected_status": "anomalie",
+      "expected_issues": [
+        "TOTAL_INCOHERENT"
+      ],
+      "accept": false,
+      "invoice": {
+        "doc_type": "facture",
+        "direction": "recue",
+        "supplier": "Imprimerie Dupont",
+        "customer": "Atelier Lumière SAS",
+        "number": "4633",
+        "issue_date": "2026-09-20",
+        "due_date": "2026-10-20",
+        "amount_excl_tax": "230.00",
+        "vat_amount": "27.60",
+        "amount_incl_tax": "276.00"
+      }
+    },
+    {
+      "file": "16_martin_doublon.pdf",
+      "expected_status": "anomalie",
+      "expected_issues": [
+        "DOUBLON",
+        "ECHEANCE_DEPASSEE"
+      ],
+      "accept": false,
+      "invoice": {
+        "doc_type": "facture",
+        "direction": "recue",
+        "supplier": "Transports Martin",
+        "customer": "Atelier Lumière SAS",
+        "number": "TM/26/033",
+        "issue_date": "2026-08-11",
+        "due_date": "2026-09-10",
+        "amount_excl_tax": "350.00",
+        "vat_amount": "70.00",
+        "amount_incl_tax": "420.00"
+      }
+    },
+    {
+      "file": "17_technet_devis.pdf",
+      "expected_status": "ok",
+      "expected_issues": [],
+      "accept": true,
+      "invoice": {
+        "doc_type": "devis",
+        "direction": "recue",
+        "supplier": "TechNet Services",
+        "customer": "Atelier Lumière SAS",
+        "number": "DV-310",
+        "issue_date": "2026-09-21",
+        "due_date": null,
+        "amount_excl_tax": "2850.00",
+        "vat_amount": "570.00",
+        "amount_incl_tax": "3420.00"
+      }
+    },
+    {
+      "file": "18_bureau_plus.pdf",
+      "expected_status": "ok",
+      "expected_issues": [],
+      "accept": true,
+      "invoice": {
+        "doc_type": "facture",
+        "direction": "recue",
+        "supplier": "Bureau Plus SARL",
+        "customer": "Atelier Lumière SAS",
+        "number": "F-2026-162",
+        "issue_date": "2026-09-22",
+        "due_date": "2026-10-22",
+        "amount_excl_tax": "38.00",
+        "vat_amount": "7.60",
+        "amount_incl_tax": "45.60"
+      }
+    },
+    {
+      "file": "19_emise_cafe.pdf",
+      "expected_status": "ok",
+      "expected_issues": [],
+      "accept": true,
+      "invoice": {
+        "doc_type": "facture",
+        "direction": "emise",
+        "supplier": "Atelier Lumière SAS",
+        "customer": "Café des Arts",
+        "number": "AL-2026-071",
+        "issue_date": "2026-09-22",
+        "due_date": "2026-10-22",
+        "amount_excl_tax": "580.00",
+        "vat_amount": "116.00",
+        "amount_incl_tax": "696.00"
+      }
+    },
+    {
+      "file": "20_dupont.pdf",
+      "expected_status": "ok",
+      "expected_issues": [],
+      "accept": true,
+      "invoice": {
+        "doc_type": "facture",
+        "direction": "recue",
+        "supplier": "Imprimerie Dupont",
+        "customer": "Atelier Lumière SAS",
+        "number": "4701",
+        "issue_date": "2026-09-23",
+        "due_date": "2026-10-23",
+        "amount_excl_tax": "132.00",
+        "vat_amount": "26.40",
+        "amount_incl_tax": "158.40"
+      }
+    }
+  ]
+}
