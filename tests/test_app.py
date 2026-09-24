@@ -3,7 +3,7 @@ from pathlib import Path
 
 from streamlit.testing.v1 import AppTest
 
-import app.main as app_main
+import agent_factures.web as app_main
 from agent_factures.storage.db import connect
 from agent_factures.storage.repository import InvoiceRepository
 from tests.factories import make_invoice
@@ -26,6 +26,7 @@ def test_dashboard_shows_stored_invoices(tmp_path, monkeypatch):
     InvoiceRepository(connect(str(db_path))).add(make_invoice(), "a.pdf")
     monkeypatch.setenv("AGENT_FACTURES_DB", str(db_path))
     at = AppTest.from_file(APP_PATH, default_timeout=30).run()
+    at.switch_page("app_pages/tableau_de_bord.py").run()
     assert not at.exception
     metrics = {m.label: m.value for m in at.metric}
     assert metrics["À payer (fournisseurs, TTC)"] == "120,00 €"
@@ -132,7 +133,7 @@ def test_rejecting_without_amount_error_needs_no_follow_up():
     assert app_main.rejection_follow_up(_result_with(None, [])) == (None, None)
 
 
-def test_journal_lists_unpaid_invoices_and_marks_them_paid(tmp_path, monkeypatch):
+def test_journal_pages_list_invoices_and_toggle_payment(tmp_path, monkeypatch):
     from datetime import date, timedelta
 
     db_path = tmp_path / "journal.db"
@@ -145,13 +146,29 @@ def test_journal_lists_unpaid_invoices_and_marks_them_paid(tmp_path, monkeypatch
     monkeypatch.setenv("ANTHROPIC_API_KEY", "")
 
     at = AppTest.from_file(APP_PATH, default_timeout=30).run()
-    assert not at.exception
-    subheaders = [h.value for h in at.subheader]
-    for title in ("À payer", "Échéance dépassée", "Clients impayés"):
-        assert any(title in h for h in subheaders), title
 
-    pay_button = next(b for b in at.button if b.key == f"paid-{late_id}")
-    pay_button.click().run()
+    def page_text(page: str) -> str:
+        at.switch_page(page).run()
+        assert not at.exception, page
+        return " ".join(m.value for m in at.markdown) + " ".join(c.value for c in at.caption)
 
+    assert "A-PAYER" in page_text("app_pages/journal_a_payer.py")
+    assert "EN-RETARD" in page_text("app_pages/journal_retard.py")
+    assert "CLIENT-1" in page_text("app_pages/journal_clients.py")
+    page_text("app_pages/journal_payees.py")
+    assert any("Aucune facture payée" in info.value for info in at.info)
+
+    at.switch_page("app_pages/journal_retard.py").run()
+    next(b for b in at.button if b.key == f"paid-{late_id}").click().run()
     assert not at.exception
     assert InvoiceRepository(connect(str(db_path))).get(late_id).paid_at == today
+
+    assert "EN-RETARD" not in page_text("app_pages/journal_retard.py")
+    assert "EN-RETARD" in page_text("app_pages/journal_payees.py")
+    next(b for b in at.button if b.key == f"unpaid-{late_id}").click().run()
+    assert not at.exception
+    assert InvoiceRepository(connect(str(db_path))).get(late_id).paid_at is None
+
+    at.switch_page("app_pages/journal_historique.py").run()
+    assert not at.exception
+    assert len(at.dataframe) == 1

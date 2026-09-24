@@ -14,7 +14,7 @@ Dans une PME, saisir et vérifier les factures prend plusieurs heures par semain
 4. **Explique** son verdict en langage clair : ✅ OK, ⚠️ anomalie ou ❓ à revoir.
 5. **Attend votre validation** avant d'enregistrer quoi que ce soit.
 6. **Prépare les mails** : une relance pour chaque client en retard de paiement, et une demande de facture rectificative quand tu rejettes une facture fournisseur à cause d'une erreur de montant. Rien n'est jamais envoyé automatiquement.
-7. **Suit les paiements** : le journal classe les factures non payées en trois listes (à payer, échéance dépassée, clients impayés), avec un bouton pour marquer chacune comme payée.
+7. **Suit les paiements** : le menu Journal donne accès à cinq pages (à payer, échéance dépassée, clients impayés, payées, historique), avec un bouton pour marquer une facture comme payée ou annuler ce paiement.
 
 ## Résultats mesurés
 
@@ -60,7 +60,8 @@ PDF / image ──► InvoiceAgent (boucle agentique) ──► verdict + extrac
 | `agent_factures.agent` | Boucle agentique écrite à la main sur l'API Messages de Claude, exécuteur d'outils, chargement des documents |
 | `agent_factures.tools` | Vérifications déterministes et brouillon de relance |
 | `agent_factures.storage` | SQLite, journal d'actions, exports CSV et Excel |
-| `app/` | Interface Streamlit |
+| `agent_factures.web` | Éléments d'interface Streamlit partagés |
+| `app/` | Point d'entrée et pages Streamlit (navigation en haut de page) |
 | `evals/` | Génération du jeu de test et mesure de la précision |
 
 ### Choix de conception
