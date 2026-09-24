@@ -172,3 +172,10 @@ def test_journal_pages_list_invoices_and_toggle_payment(tmp_path, monkeypatch):
     at.switch_page("app_pages/journal_historique.py").run()
     assert not at.exception
     assert len(at.dataframe) == 1
+
+
+def test_display_name_hides_the_upload_timestamp():
+    stored = app_main.stored_upload_path("08_technet_tva.pdf", datetime(2026, 9, 24, 20, 4, 44, 286400))
+    assert app_main.display_name(stored.name) == "08_technet_tva.pdf"
+    assert app_main.display_name("facture.pdf") == "facture.pdf"
+    assert app_main.display_name("2026_budget.pdf") == "2026_budget.pdf"

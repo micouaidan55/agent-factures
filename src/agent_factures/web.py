@@ -1,6 +1,7 @@
 """Éléments d'interface Streamlit partagés par les pages de app/ : dépôt, validation, tableau de bord et journal."""
 
 import os
+import re
 from datetime import date, datetime, timedelta
 from decimal import Decimal
 from pathlib import Path
@@ -36,6 +37,11 @@ def stored_upload_path(name: str, now: datetime) -> Path:
     déjà accepté, et réduit à son nom de base pour rester dans UPLOAD_DIR (pas de traversée)."""
     safe_name = Path(name).name or "fichier"
     return UPLOAD_DIR / f"{now.strftime(UPLOAD_TIMESTAMP_FORMAT)}_{safe_name}"
+
+
+def display_name(stored_name: str) -> str:
+    """Nom lisible d'un fichier déposé : sans le préfixe d'horodatage ajouté par stored_upload_path."""
+    return re.sub(r"^\d{8}-\d{6}-\d{6}_", "", stored_name)
 
 
 def archive_inbox_file(path: Path) -> Path:
@@ -82,17 +88,17 @@ def process_files(paths: list[Path], repo: InvoiceRepository, log: ActionLog, mo
         return False
     pending = st.session_state.setdefault("pending", {})
     for path in paths:
-        with st.status(f"Analyse de {path.name}…", expanded=True) as box:
+        with st.status(f"Analyse de {display_name(path.name)}…", expanded=True) as box:
             try:
                 result = agent.process(path)
             except Exception as exc:
-                box.update(label=f"{path.name} : échec de l'analyse", state="error", expanded=True)
+                box.update(label=f"{display_name(path.name)} : échec de l'analyse", state="error", expanded=True)
                 st.error(f"Échec de l'analyse de {path.name} : {exc}")
                 log.record(path.name, "erreur", {"message": str(exc)})
                 continue
             for call in result.trace:
                 box.write(f"🔧 `{call.name}` → {call.output[:200]}")
-            box.update(label=f"{path.name} : {STATUS_LABELS[result.verdict.status]}", state="complete", expanded=False)
+            box.update(label=f"{display_name(path.name)} : {STATUS_LABELS[result.verdict.status]}", state="complete", expanded=False)
         log.record(
             path.name,
             "analyse",
@@ -132,7 +138,7 @@ def _as_float(value) -> float:
 
 def render_review(name: str, path: Path, result: AgentResult, repo: InvoiceRepository, log: ActionLog) -> None:
     with st.container(border=True):
-        st.subheader(f"{name} — {STATUS_LABELS[result.verdict.status]}")
+        st.subheader(f"{display_name(name)} — {STATUS_LABELS[result.verdict.status]}")
         st.write(result.verdict.explanation)
         for issue in result.issues:
             st.warning(f"**{issue.code}** : {issue.message}")
@@ -229,10 +235,10 @@ def render_process_tab(repo: InvoiceRepository, log: ActionLog, model: str) -> N
     follow_ups = st.session_state.get("follow_ups", {})
     for name, (draft, note) in list(follow_ups.items()):
         with st.container(border=True):
-            st.subheader(f"{name} — rejetée")
+            st.subheader(f"{display_name(name)} — rejetée")
             if draft:
                 st.caption("Brouillon de demande de facture rectificative (rien n'est envoyé automatiquement) :")
-                st.code(draft, language=None)
+                st.code(draft, language=None, wrap_lines=True)
             if note:
                 st.info(note)
             if st.button("Fermer", key=f"close-{name}"):
@@ -261,7 +267,7 @@ def render_dashboard(repo: InvoiceRepository, today: date) -> None:
         for s in late_customers:
             with st.expander(f"{s.invoice.customer or 'Client'} — n° {s.invoice.number} — {euros(s.invoice.amount_incl_tax)}"):
                 st.caption("Brouillon de relance (rien n'est envoyé automatiquement) :")
-                st.code(draft_reminder(s.invoice, today), language=None)
+                st.code(draft_reminder(s.invoice, today), language=None, wrap_lines=True)
 
     if late_suppliers:
         st.subheader("Factures fournisseurs à payer en retard")
@@ -300,7 +306,7 @@ def _render_unpaid(stored: StoredInvoice, repo: InvoiceRepository, log: ActionLo
         st.rerun()
     if with_reminder and days_late:
         with st.expander("Brouillon de relance"):
-            st.code(draft_reminder(invoice, today), language=None)
+            st.code(draft_reminder(invoice, today), language=None, wrap_lines=True)
 
 
 UNPAID_SECTIONS = {
