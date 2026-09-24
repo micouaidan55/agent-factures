@@ -1,0 +1,31 @@
+[project]
+name = "agent-factures"
+version = "0.1.0"
+description = "Agent IA de traitement de factures et devis pour PME"
+requires-python = ">=3.12"
+dependencies = [
+    "anthropic>=1.8.0",
+    "openpyxl>=3.1.5",
+    "pandas>=3.0.6",
+    "pillow>=12.3.0",
+    "pydantic>=2",
+    "python-dotenv>=1.2.3",
+    "reportlab>=5.0.1",
+    "streamlit>=1.64.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/agent_factures"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+]
