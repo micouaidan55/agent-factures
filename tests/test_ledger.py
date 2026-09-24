@@ -25,6 +25,7 @@ def test_ledger_sorts_unpaid_invoices_into_three_lists():
     assert [s.invoice.number for s in ledger.to_pay] == ["due-soon", "no-due"]
     assert [s.invoice.number for s in ledger.overdue] == ["late-1", "late-2"]
     assert [s.invoice.number for s in ledger.unpaid_customers] == ["client-late", "client-ok"]
+    assert [s.invoice.number for s in ledger.paid] == ["paid"]
     assert ledger.days_late(ledger.overdue[0], TODAY) == 23
     assert ledger.days_late(ledger.unpaid_customers[1], TODAY) == 0
 

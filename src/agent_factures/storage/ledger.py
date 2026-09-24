@@ -1,4 +1,4 @@
-"""Classement des factures non payées : à payer, échéance dépassée, clients impayés."""
+"""Classement des factures : à payer, échéance dépassée, clients impayés et payées."""
 
 from dataclasses import dataclass
 from datetime import date
@@ -12,6 +12,7 @@ class Ledger:
     to_pay: list[StoredInvoice]
     overdue: list[StoredInvoice]
     unpaid_customers: list[StoredInvoice]
+    paid: list[StoredInvoice]
 
     @staticmethod
     def days_late(stored: StoredInvoice, today: date) -> int:
@@ -29,4 +30,5 @@ def build_ledger(repo: InvoiceRepository, today: date) -> Ledger:
         to_pay=[s for s in received if not _is_overdue(s, today)],
         overdue=[s for s in received if _is_overdue(s, today)],
         unpaid_customers=repo.list_unpaid(direction=Direction.ISSUED),
+        paid=repo.list_paid(),
     )

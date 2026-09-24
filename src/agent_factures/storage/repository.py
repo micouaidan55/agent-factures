@@ -52,6 +52,16 @@ class InvoiceRepository:
         self._conn.execute("UPDATE invoices SET paid_at = ? WHERE id = ?", (paid_on.isoformat(), invoice_id))
         self._conn.commit()
 
+    def mark_unpaid(self, invoice_id: int) -> None:
+        self._conn.execute("UPDATE invoices SET paid_at = NULL WHERE id = ?", (invoice_id,))
+        self._conn.commit()
+
+    def list_paid(self) -> list[StoredInvoice]:
+        """Factures payées, reçues et émises, la plus récemment payée en premier."""
+        return self._select(
+            "WHERE doc_type = ? AND paid_at IS NOT NULL", (DocumentType.INVOICE.value,), order="paid_at DESC, id DESC"
+        )
+
     def list_unpaid(self, direction: Direction) -> list[StoredInvoice]:
         """Factures (hors devis) non payées d'un sens donné, par échéance croissante, sans échéance en dernier."""
         return self._select(

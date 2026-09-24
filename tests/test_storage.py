@@ -139,3 +139,17 @@ def test_connect_adds_the_paid_column_to_older_databases(tmp_path):
     invoice_id = repo.add(make_invoice(), "a.pdf")
     repo.mark_paid(invoice_id, date(2026, 9, 24))
     assert repo.get(invoice_id).paid_at == date(2026, 9, 24)
+
+
+def test_list_paid_is_most_recent_payment_first_and_mark_unpaid_restores():
+    repo = make_repo()
+    first = repo.add(make_invoice(number="first"), "a.pdf")
+    second = repo.add(make_invoice(number="second", direction="emise"), "b.pdf")
+    repo.add(make_invoice(number="unpaid"), "c.pdf")
+    repo.mark_paid(first, date(2026, 9, 10))
+    repo.mark_paid(second, date(2026, 9, 20))
+    assert [s.invoice.number for s in repo.list_paid()] == ["second", "first"]
+
+    repo.mark_unpaid(second)
+    assert [s.invoice.number for s in repo.list_paid()] == ["first"]
+    assert repo.get(second).paid_at is None
