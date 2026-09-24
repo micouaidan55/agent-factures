@@ -42,7 +42,12 @@ def test_happy_path(pdf):
     )
     assert result.verdict.status is Status.OK
     assert result.invoice == make_invoice()
-    assert [c.name for c in result.trace] == ["submit_extraction", "check_amounts", "check_due_date", "submit_verdict"]
+    # find_duplicates and get_supplier_history weren't called by Claude: the loop runs them
+    # itself after the verdict (F3) so a skipped check never hides an anomaly.
+    assert [c.name for c in result.trace] == [
+        "submit_extraction", "check_amounts", "check_due_date", "submit_verdict",
+        "find_duplicates", "get_supplier_history",
+    ]
     assert (result.input_tokens, result.output_tokens) == (300, 150)
     assert result.cost_usd == pytest.approx((300 * 2.0 + 150 * 10.0) / 1_000_000)
     assert len(client.calls) == 3
@@ -128,6 +133,23 @@ def test_company_name_is_configurable(pdf):
         company="Boulangerie Durand",
     )
     assert "Boulangerie Durand" in client.calls[0]["system"]
+
+
+def test_skipped_check_still_runs_and_catches_duplicate(pdf):
+    repo = InvoiceRepository(connect())
+    repo.add(make_invoice(), "existing.pdf")
+    client = FakeClient(
+        [
+            reply(tool_use("submit_extraction", VALID)),
+            reply(tool_use("submit_verdict", {"status": "ok", "explanation": "Conforme."})),
+        ]
+    )
+    agent = InvoiceAgent(client=client, repo=repo, today=TODAY)
+    result = agent.process(pdf)
+
+    assert result.verdict.status is Status.ANOMALY
+    assert "DOUBLON" in {issue.code for issue in result.issues}
+    assert "find_duplicates" in [c.name for c in result.trace]
 
 
 def test_unknown_model_has_no_cost(pdf):

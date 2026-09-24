@@ -28,6 +28,8 @@ SYSTEM_PROMPT_TEMPLATE = """Tu es l'assistant comptable de l'entreprise « {comp
 
 USER_INSTRUCTION = "Traite ce document."
 
+CHECK_TOOLS = ("check_amounts", "check_due_date", "find_duplicates", "get_supplier_history")
+
 
 @dataclass
 class AgentResult:
@@ -82,7 +84,8 @@ class InvoiceAgent:
             tokens[1] += response.usage.output_tokens
 
             if response.stop_reason != "tool_use":
-                return self._result(executor, tokens, fallback="L'agent s'est arrêté sans rendre de verdict.")
+                fallback = f"L'agent s'est arrêté sans rendre de verdict (stop_reason : {response.stop_reason})."
+                return self._result(executor, tokens, fallback=fallback)
 
             messages.append({"role": "assistant", "content": response.content})
             results = []
@@ -97,7 +100,25 @@ class InvoiceAgent:
 
         return self._result(executor, tokens, fallback=f"Limite de {self.max_iterations} itérations atteinte.")
 
+    def _ensure_checks_run(self, executor: ToolExecutor) -> None:
+        """Force l'exécution des contrôles déterministes que Claude aurait pu sauter,
+        pour ne jamais perdre silencieusement une anomalie (doublon, montant inhabituel...)."""
+        last_extraction = -1
+        for i, call in enumerate(executor.trace):
+            if call.name == "submit_extraction" and not call.is_error:
+                last_extraction = i
+        already_run = {
+            call.name
+            for call in executor.trace[last_extraction + 1 :]
+            if call.name in CHECK_TOOLS and not call.is_error
+        }
+        for name in CHECK_TOOLS:
+            if name not in already_run:
+                executor.execute(name, {})
+
     def _result(self, executor: ToolExecutor, tokens: list[int], fallback: str | None = None) -> AgentResult:
+        if executor.invoice is not None:
+            self._ensure_checks_run(executor)
         verdict = executor.verdict or Verdict(status=Status.NEEDS_REVIEW, explanation=fallback or "Aucun verdict.")
         if verdict.status is Status.OK and executor.issues:
             codes = ", ".join(issue.code for issue in executor.issues)

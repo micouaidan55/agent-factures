@@ -81,6 +81,7 @@ class ToolExecutor:
                 return f"Extraction toujours invalide, document marqué à revoir : {exc}", True
             return f"Extraction invalide, corrige et renvoie-la : {exc}", True
         self.partial_extraction = None
+        self.issues = []  # les anciens contrôles portaient sur une extraction périmée : à refaire.
         return "Extraction enregistrée.", False
 
     def _check_amounts(self, _: dict) -> ToolOutput:

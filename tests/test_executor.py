@@ -88,6 +88,15 @@ def test_overdue_is_detected():
     assert json.loads(output)["code"] == "ECHEANCE_DEPASSEE"
 
 
+def test_successful_reextraction_clears_stale_issues():
+    executor = make_executor()
+    executor.execute("submit_extraction", {**VALID, "vat_amount": 25})
+    executor.execute("check_amounts", {})
+    assert [i.code for i in executor.issues] == ["TOTAL_INCOHERENT"]
+    executor.execute("submit_extraction", VALID)
+    assert executor.issues == []
+
+
 def test_same_issue_is_not_collected_twice():
     executor = make_executor()
     executor.execute("submit_extraction", {**VALID, "vat_amount": 25})
