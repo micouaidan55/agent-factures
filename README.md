@@ -4,7 +4,9 @@
 
 Dans une PME, saisir et vérifier les factures prend plusieurs heures par semaine : recopier les montants, repérer les doublons, surveiller ce qu'il reste à payer aux fournisseurs et à encaisser auprès des clients. Cet agent fait le travail préparatoire, et un humain valide chaque pièce en quelques secondes.
 
-<!-- Ajouter ici un GIF de démo : docs/demo.gif -->
+![Démo : analyse d'une facture, rejet avec demande de rectification, journal des paiements](docs/demo.gif)
+
+*En 30 secondes : l'agent analyse une facture et repère une TVA incohérente. Au rejet, il prépare la demande de facture rectificative. Le journal classe ensuite les factures par statut de paiement, avec les relances clients prêtes à envoyer.*
 
 ## Ce que fait l'agent
 
