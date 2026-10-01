@@ -1,5 +1,7 @@
 # Agent factures
 
+> Projet 1 d'une suite d'agents pour PME. Projet 2 : [agent-emails](https://github.com/micouaidan55/agent-emails), le tri de la boîte de réception, qui transmet les factures à cet agent.
+
 **Un agent IA qui lit vos factures, en extrait les données, repère les erreurs et prépare les relances clients, sous votre contrôle.**
 
 Dans une PME, saisir et vérifier les factures prend plusieurs heures par semaine : recopier les montants, repérer les doublons, surveiller ce qu'il reste à payer aux fournisseurs et à encaisser auprès des clients. Cet agent fait le travail préparatoire, et un humain valide chaque pièce en quelques secondes.
@@ -82,6 +84,6 @@ uv run pytest
 
 ## Limites connues et feuille de route
 
-- Pas encore de connexion à une boîte mail (Gmail ou IMAP).
+- Pas de connexion directe à une boîte mail : c'est le rôle d'[agent-emails](https://github.com/micouaidan55/agent-emails), qui trie la boîte de réception, détecte les fraudes et transmet ici les factures reçues par email.
 - Mono-utilisateur, sans authentification.
-- Prochaines étapes : tri automatique des emails entrants, relances clients, option de modèle local pour les données sensibles.
+- Prochaines étapes : relances clients automatisées, option de modèle local pour les données sensibles.
