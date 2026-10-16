@@ -1,6 +1,6 @@
 # Agent factures
 
-> Projet 1 d'une suite d'agents pour PME. Projet 2 : [agent-emails](https://github.com/micouaidan55/agent-emails), le tri de la boîte de réception, qui transmet les factures à cet agent. Projet 3 : [agent-relances](https://github.com/micouaidan55/agent-relances), qui relance les clients impayés à partir des factures émises enregistrées ici.
+> Projet 1 d'une suite d'agents pour PME. Projet 2 : [agent-emails](https://github.com/micouaidan55/agent-emails), le tri de la boîte de réception, qui transmet les factures à cet agent. Projet 3 : [agent-relances](https://github.com/micouaidan55/agent-relances), qui relance les clients impayés à partir des factures émises enregistrées ici. Vue d'ensemble de la suite : [agent-pme-suite](https://github.com/micouaidan55/agent-pme-suite).
 
 **Un agent IA qui lit vos factures, en extrait les données, repère les erreurs et prépare les relances clients, sous votre contrôle.**
 
