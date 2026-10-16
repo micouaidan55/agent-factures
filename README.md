@@ -1,6 +1,6 @@
 # Agent factures
 
-> Projet 1 d'une suite d'agents pour PME. Projet 2 : [agent-emails](https://github.com/micouaidan55/agent-emails), le tri de la boîte de réception, qui transmet les factures à cet agent.
+> Projet 1 d'une suite d'agents pour PME. Projet 2 : [agent-emails](https://github.com/micouaidan55/agent-emails), le tri de la boîte de réception, qui transmet les factures à cet agent. Projet 3 : [agent-relances](https://github.com/micouaidan55/agent-relances), qui relance les clients impayés à partir des factures émises enregistrées ici.
 
 **Un agent IA qui lit vos factures, en extrait les données, repère les erreurs et prépare les relances clients, sous votre contrôle.**
 
@@ -86,4 +86,5 @@ uv run pytest
 
 - Pas de connexion directe à une boîte mail : c'est le rôle d'[agent-emails](https://github.com/micouaidan55/agent-emails), qui trie la boîte de réception, détecte les fraudes et transmet ici les factures reçues par email.
 - Mono-utilisateur, sans authentification.
-- Prochaines étapes : relances clients automatisées, option de modèle local pour les données sensibles.
+- Les relances clients suivies dans le temps (paliers, ton adapté, vérification des montants) sont le rôle d'[agent-relances](https://github.com/micouaidan55/agent-relances).
+- Prochaine étape : option de modèle local pour les données sensibles.
