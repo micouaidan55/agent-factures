@@ -10,6 +10,10 @@ Dans une PME, saisir et vérifier les factures prend plusieurs heures par semain
 
 *En 30 secondes : l'agent analyse une facture et repère une TVA incohérente. Au rejet, il prépare la demande de facture rectificative. Le journal classe ensuite les factures par statut de paiement, avec les relances clients prêtes à envoyer.*
 
+| Une TVA incohérente repérée | La demande de rectification prête | Le suivi des paiements |
+|:---:|:---:|:---:|
+| <img src="docs/captures/anomalie_tva.jpg" width="290" alt="Verdict Anomalie : le total TTC ne correspond pas au HT plus la TVA"> | <img src="docs/captures/demande_rectificative.jpg" width="290" alt="Facture rejetée et brouillon de demande de facture rectificative"> | <img src="docs/captures/tableau_de_bord.jpg" width="290" alt="Tableau de bord : à payer, à encaisser, clients en retard"> |
+
 ## Ce que j'ai fait en tant que product manager
 
 Projet personnel (septembre 2026), conçu à partir de mon expérience de gérant de deux centres de santé, et développé avec Claude Code : besoin, spécification, priorisation, évaluation.
