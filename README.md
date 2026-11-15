@@ -10,6 +10,15 @@ Dans une PME, saisir et vérifier les factures prend plusieurs heures par semain
 
 *En 30 secondes : l'agent analyse une facture et repère une TVA incohérente. Au rejet, il prépare la demande de facture rectificative. Le journal classe ensuite les factures par statut de paiement, avec les relances clients prêtes à envoyer.*
 
+## Ce que j'ai fait en tant que product manager
+
+Projet personnel (septembre 2026), conçu à partir de mon expérience de gérant de deux centres de santé, et développé avec Claude Code : besoin, spécification, priorisation, évaluation.
+
+- **Un besoin vécu et chiffrable.** Des dizaines de factures par mois à saisir et vérifier à la main, avec des doublons, des erreurs de TVA et des impayés à relancer.
+- **Une V1 volontairement réduite.** Extraction, contrôles et validation humaine d'abord. La connexion à la boîte mail et le multi-utilisateur sont restés hors de la V1. Puis j'ai itéré à partir de l'usage : statut « payée », demande de facture rectificative, navigation plus claire.
+- **L'humain garde la main.** L'agent propose un verdict expliqué, mais ne peut rien enregistrer seul. Les calculs sensibles (TVA, totaux, doublons) sont faits par du code testé, pas par le modèle.
+- **La qualité mesurée, pas supposée.** 40 documents d'évaluation avec des pièges volontaires : **100 %** des données extraites correctement, **14 anomalies sur 14** sans fausse alerte, pour **3 centimes** et 11 secondes par facture. 104 tests automatisés.
+
 ## Ce que fait l'agent
 
 1. **Lit** les factures et devis en PDF ou en image (y compris des scans).
@@ -17,7 +26,7 @@ Dans une PME, saisir et vérifier les factures prend plusieurs heures par semain
 3. **Vérifie** la cohérence des montants, les doublons, les montants inhabituels pour un fournisseur et les échéances dépassées.
 4. **Explique** son verdict en langage clair : ✅ OK, ⚠️ anomalie ou ❓ à revoir.
 5. **Attend votre validation** avant d'enregistrer quoi que ce soit.
-6. **Prépare les mails** : une relance pour chaque client en retard de paiement, et une demande de facture rectificative quand tu rejettes une facture fournisseur à cause d'une erreur de montant. Rien n'est jamais envoyé automatiquement.
+6. **Prépare les mails** : une relance pour chaque client en retard de paiement, et une demande de facture rectificative quand vous rejetez une facture fournisseur à cause d'une erreur de montant. Rien n'est jamais envoyé automatiquement.
 7. **Suit les paiements** : le menu Journal donne accès à cinq pages (à payer, échéance dépassée, clients impayés, payées, historique), avec un bouton pour marquer une facture comme payée ou annuler ce paiement.
 
 ## Résultats mesurés
